@@ -88,12 +88,11 @@ class ButtonPuzzleView: UIView {
             thirdButton, fourthButton
         ])
         
-        view.axis = .horizontal
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.spacing = 100
+        view.axis         = .horizontal
+        view.spacing      = 100
         view.distribution = .fillEqually
-        view.alignment = .fill
-        
+        view.alignment    = .fill
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     

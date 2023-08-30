@@ -15,6 +15,11 @@
 		B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */; };
 		B3F9A4EE2A991C5D00B7E7F1 /* ButtonPuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */; };
 		B3F9A4F02A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */; };
+		B3F9A4F22A9BB40800B7E7F1 /* LightPuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4F12A9BB40800B7E7F1 /* LightPuzzleView.swift */; };
+		B3F9A4F72A9BB88100B7E7F1 /* LightPuzzleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4F62A9BB88100B7E7F1 /* LightPuzzleViewController.swift */; };
+		B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4FA2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift */; };
+		B3F9A4FD2A9BD56500B7E7F1 /* SKMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4FC2A9BD56500B7E7F1 /* SKMirror.swift */; };
+		B3F9A4FF2A9E1D5900B7E7F1 /* SKLightBeam.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4FE2A9E1D5900B7E7F1 /* SKLightBeam.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +33,11 @@
 		B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleViewController.swift; sourceTree = "<group>"; };
 		B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleView.swift; sourceTree = "<group>"; };
 		B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
+		B3F9A4F12A9BB40800B7E7F1 /* LightPuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightPuzzleView.swift; sourceTree = "<group>"; };
+		B3F9A4F62A9BB88100B7E7F1 /* LightPuzzleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightPuzzleViewController.swift; sourceTree = "<group>"; };
+		B3F9A4FA2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightPuzzleScene.swift; sourceTree = "<group>"; };
+		B3F9A4FC2A9BD56500B7E7F1 /* SKMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SKMirror.swift; path = Mini2/View/Scenes/SKMirror.swift; sourceTree = SOURCE_ROOT; };
+		B3F9A4FE2A9E1D5900B7E7F1 /* SKLightBeam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SKLightBeam.swift; path = Mini2/View/Scenes/SKLightBeam.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,8 +84,10 @@
 		84C01A342A97E9DD0070D2E5 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B3F9A4F32A9BB49400B7E7F1 /* Scenes */,
 				B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */,
 				B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */,
+				B3F9A4F12A9BB40800B7E7F1 /* LightPuzzleView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -83,6 +95,8 @@
 		84C01A352A97EA090070D2E5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B3F9A4FC2A9BD56500B7E7F1 /* SKMirror.swift */,
+				B3F9A4FE2A9E1D5900B7E7F1 /* SKLightBeam.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -92,6 +106,7 @@
 			children = (
 				84C01A242A97E8C60070D2E5 /* ViewController.swift */,
 				B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */,
+				B3F9A4F62A9BB88100B7E7F1 /* LightPuzzleViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -103,6 +118,14 @@
 				84C01A222A97E8C60070D2E5 /* SceneDelegate.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		B3F9A4F32A9BB49400B7E7F1 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				B3F9A4FA2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift */,
+			);
+			path = Scenes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,10 +198,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3F9A4FD2A9BD56500B7E7F1 /* SKMirror.swift in Sources */,
 				B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */,
 				B3F9A4EE2A991C5D00B7E7F1 /* ButtonPuzzleView.swift in Sources */,
 				84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */,
+				B3F9A4F22A9BB40800B7E7F1 /* LightPuzzleView.swift in Sources */,
+				B3F9A4FF2A9E1D5900B7E7F1 /* SKLightBeam.swift in Sources */,
 				B3F9A4F02A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift in Sources */,
+				B3F9A4F72A9BB88100B7E7F1 /* LightPuzzleViewController.swift in Sources */,
+				B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */,
 				84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */,
 				84C01A232A97E8C60070D2E5 /* SceneDelegate.swift in Sources */,
 			);

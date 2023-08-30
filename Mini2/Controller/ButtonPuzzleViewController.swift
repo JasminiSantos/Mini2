@@ -23,12 +23,7 @@ class ButtonPuzzleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonPuzzleView.sequencePublisher
-            .sink { [weak self] value in
-                self?.addToCurrentSequence(value)
-                
-            }
-            .store(in: &cancellables)
+        setupSubscriptions()
     }
     
     func addToCurrentSequence(_ value: Int) {
@@ -67,4 +62,13 @@ class ButtonPuzzleViewController: UIViewController {
         })
     }
 
+    private func setupSubscriptions() {
+        buttonPuzzleView.sequencePublisher
+            .sink { [weak self] value in
+                self?.addToCurrentSequence(value)
+                
+            }
+            .store(in: &cancellables)
+    }
+    
 }
