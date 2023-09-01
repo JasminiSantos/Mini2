@@ -8,17 +8,14 @@
 import SpriteKit
 
 class SKMirror: SKSpriteNode {
+    var id = ""
     weak var delegate: SKMirrorDelegate?
     var touchArea:    SKShapeNode!
-    var isReflecting = false
-    var lastReflectedBeamID: UUID?
     
-    init(position: CGPoint, size: CGSize) {
+    init(position: CGPoint, size: CGSize, rotation: CGFloat) {
         super.init(texture: nil, color: .gray, size: size)
-        
         self.position = position
-        self.name     = "mirror"
-        
+        self.zRotation = rotation
         addTouchArea()
     }
     
@@ -57,8 +54,8 @@ class SKMirror: SKSpriteNode {
         let dx = points.end.x - points.start.x
         let dy = points.end.y - points.start.y
         
-        let normal1 = CGVector(dx: dy, dy: -dx)
-        let normal2 = CGVector(dx: -dy, dy: dx)
+        let normal1 = normalize(CGVector(dx: dy, dy: -dx))
+        let normal2 = normalize(CGVector(dx: -dy, dy: dx))
         
         return (normal1, normal2)
     }
@@ -74,41 +71,22 @@ class SKMirror: SKSpriteNode {
         return acos(cosineTheta) * 180 / .pi
     }
     
-    
     func didDetectLight(incidentPoint: CGPoint, incidentVector: CGVector) {
         var reflectedVector: CGVector?
+        let normals = getNormalVectors()
+        let anglePair = [(normal: normals.0, angle: calculateAngleOfIncidence(incidentVector, withNormal: normals.0)),
+                      (normal: normals.1, angle: calculateAngleOfIncidence(incidentVector, withNormal: normals.1))]
         
-        if isReflecting {
-            if let existingBeamID = lastReflectedBeamID,
-               let existingBeam = (scene as! LightPuzzleScene).findLightBeam(byID: existingBeamID) {
-                existingBeam.updateDirectionAndStartPoint(
-                    newStartPoint: incidentPoint,
-                    newDirection: reflectedVector ?? CGVector(dx: 0, dy: 0))
+        for (normal, angle) in anglePair {
+            if angle < 90 {
+                reflectedVector = reflect(incidentVector: incidentVector, normalVector: normal)
             }
-        } else {
-            let normals = getNormalVectors()
-            let anglePair = [(normal: normals.0, angle: calculateAngleOfIncidence(incidentVector, withNormal: normals.0)),
-                            (normal: normals.1, angle: calculateAngleOfIncidence(incidentVector, withNormal: normals.1))]
-            
-            for (normal, angle) in anglePair {
-                if angle < 90 {
-                    reflectedVector = reflect(incidentVector: incidentVector, normalVector: normal)
-                }
-            }
-            
-            let newLightBeam = SKLightBeam(startPoint: incidentPoint, direction: reflectedVector ?? CGVector(dx: 0, dy: 0))
-            newLightBeam.strokeColor = .blue
-            newLightBeam.lineWidth   = 5
-            
-            delegate?.didGenerateNewLightBeam(newLightBeam)
-            
-            lastReflectedBeamID = newLightBeam.id
-            (scene as! LightPuzzleScene).addLightBeam(newLightBeam)
-            
-            isReflecting = true
         }
-    }
+        
+        let newLightBeam = SKLightBeam(startPoint: incidentPoint, direction: reflectedVector ?? CGVector(dx: 0, dy: 0))
 
+        delegate?.didGenerateNewLightBeam(newLightBeam)
+    }
     
     func reflect(incidentVector: CGVector, normalVector: CGVector) -> CGVector {
         let dotProduct = incidentVector.dx * normalVector.dx + incidentVector.dy * normalVector.dy
@@ -121,4 +99,8 @@ class SKMirror: SKSpriteNode {
         return reflectedVector
     }
 
+    func normalize(_ vector: CGVector) -> CGVector {
+        let length = sqrt(vector.dx * vector.dx + vector.dy * vector.dy)
+        return CGVector(dx: vector.dx / length, dy: vector.dy / length)
+    }
 }

@@ -8,25 +8,39 @@
 import SpriteKit
 
 class SKLightBeam: SKShapeNode {
+    var id = ""
     var startPoint: CGPoint
     var endPoint:   CGPoint
-    var isReflecting: Bool?
+    var direction:  CGVector
     
-    let id = UUID()
+    var isReflecting = false
     
     init(startPoint: CGPoint, endPoint: CGPoint) {
         self.startPoint = startPoint
         self.endPoint   = endPoint
-        super.init()
         
+        let dx = endPoint.x - startPoint.x
+        let dy = endPoint.y - startPoint.y
+        let rawDirection = CGVector(dx: dx, dy: dy)
+        let length = sqrt(rawDirection.dx * rawDirection.dx + rawDirection.dy * rawDirection.dy)
+        self.direction = CGVector(dx: rawDirection.dx / length, dy: rawDirection.dy / length)
+
+        
+        super.init()
+        self.strokeColor = .yellow
+        self.lineWidth   = 5
         updatePath()
     }
     
     init(startPoint: CGPoint, direction: CGVector) {
         self.startPoint = startPoint
-        let scalar: CGFloat = 100.0
-        self.endPoint = CGPoint(x: startPoint.x + direction.dx * scalar, y: startPoint.y + direction.dy * scalar)
+        self.endPoint = CGPoint(x: startPoint.x + direction.dx * 100.0, y: startPoint.y + direction.dy * 100.0)
+
+        self.direction = direction
+        
         super.init()
+        self.strokeColor = .yellow
+        self.lineWidth   = 5
         updatePath()
     }
     
@@ -41,40 +55,22 @@ class SKLightBeam: SKShapeNode {
         self.path = path.cgPath
     }
     
-    func updateDirectionAndStartPoint(newStartPoint: CGPoint, newDirection: CGVector) {
-        self.startPoint = newStartPoint
-        self.endPoint = CGPoint(x: startPoint.x + newDirection.dx * 100.0, y: startPoint.y + newDirection.dy * 100.0)
-        
-        updatePath()
-    }
-
-    
     func updateWithMirror(mirror: SKMirror) {
         let mirrorEndpoints = mirror.getMirrorEndpoints()
         let mirrorStart     = mirrorEndpoints.start
         let mirrorEnd       = mirrorEndpoints.end
 
-        var ip: CGPoint?
         if let intersectionPoint = findIntersection(
             A1: mirrorStart,
             B1: mirrorEnd,
             A2: startPoint,
             B2: endPoint) {
-                ip = intersectionPoint
-                isReflecting = true
                 endPoint = intersectionPoint
-                mirror.didDetectLight(
-                    incidentPoint: intersectionPoint,
-                    incidentVector: CGVector(dx: endPoint.x - startPoint.x,
-                                             dy: endPoint.y - startPoint.y))
-            
+                mirror.didDetectLight(incidentPoint: intersectionPoint,
+                                      incidentVector: CGVector(dx: endPoint.x - startPoint.x,
+                                                               dy: endPoint.y - startPoint.y))
                 updatePath()
-        } else {
-            isReflecting = false
-            resetPath()
         }
-        
-        print("\(id) Reflecting: \(isReflecting)")
     }
     
     func findIntersection(A1: CGPoint, B1: CGPoint, A2: CGPoint, B2: CGPoint) -> CGPoint? {
@@ -91,7 +87,9 @@ class SKLightBeam: SKShapeNode {
         let t = ((A2.x - A1.x) * dB.dy - (A2.y - A1.y) * dB.dx) / determinant
         let u = -((A1.x - A2.x) * dA.dy - (A1.y - A2.y) * dA.dx) / determinant
         
-        if t >= 0 && t <= 1 && u >= 0 && u <= 1.3 {
+        
+        // mudei u de 0 para 0.001
+        if t >= 0 && t <= 1 && u >= 0.001 && u <= 1.25 {
             let intersectionPoint = CGPoint(
                 x: A1.x + t * dA.dx,
                 y: A1.y + t * dA.dy
@@ -103,11 +101,11 @@ class SKLightBeam: SKShapeNode {
         return nil
     }
     
-    func resetPath() {
-        guard let parent else {
-            return
-        }
-        endPoint = CGPoint(x: parent.frame.maxX, y: frame.midY)
-        updatePath()
+    func findIntersection(withMirror mirror: SKMirror) -> CGPoint? {
+        let mirrorEndpoints = mirror.getMirrorEndpoints()
+        let mirrorStart     = mirrorEndpoints.start
+        let mirrorEnd       = mirrorEndpoints.end
+        
+        return findIntersection(A1: mirrorStart, B1: mirrorEnd, A2: startPoint, B2: endPoint)
     }
 }
