@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
                 
-        let startViewController = LightPuzzleViewController()
+        let startViewController = PipePuzzleViewController()
         let navigationController = UINavigationController(rootViewController: startViewController)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
