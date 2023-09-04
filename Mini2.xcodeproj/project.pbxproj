@@ -244,7 +244,6 @@
 				B3F9A5052AA2593200B7E7F1 /* PipePuzzleView.swift in Sources */,
 				B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */,
 				843DAA552AA11C24002A0CD0 /* Radar.swift in Sources */,
-				84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */,
 				843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */,
 				84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */,
 				843DAA4F2A9D2953002A0CD0 /* RoomViewController.swift in Sources */,
