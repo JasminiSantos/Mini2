@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		843DA3D92A97EE5E002A0CD0 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3D82A97EE5E002A0CD0 /* Map.swift */; };
+		843DA3DB2A97EE66002A0CD0 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3DA2A97EE66002A0CD0 /* Room.swift */; };
+		843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3E42A991F29002A0CD0 /* Direction.swift */; };
+		843DAA4D2A9D1DF6002A0CD0 /* ContaminationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DAA4C2A9D1DF6002A0CD0 /* ContaminationConfig.swift */; };
+		843DAA4F2A9D2953002A0CD0 /* RoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DAA4E2A9D2953002A0CD0 /* RoomViewController.swift */; };
+		843DAA532A9E666B002A0CD0 /* Doors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DAA522A9E666B002A0CD0 /* Doors.swift */; };
+		843DAA552AA11C24002A0CD0 /* Radar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DAA542AA11C24002A0CD0 /* Radar.swift */; };
 		84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C01A202A97E8C60070D2E5 /* AppDelegate.swift */; };
 		84C01A232A97E8C60070D2E5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C01A222A97E8C60070D2E5 /* SceneDelegate.swift */; };
 		84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C01A242A97E8C60070D2E5 /* ViewController.swift */; };
@@ -27,6 +34,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		843DA3D82A97EE5E002A0CD0 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
+		843DA3DA2A97EE66002A0CD0 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		843DA3E42A991F29002A0CD0 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
+		843DAA4C2A9D1DF6002A0CD0 /* ContaminationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContaminationConfig.swift; sourceTree = "<group>"; };
+		843DAA4E2A9D2953002A0CD0 /* RoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomViewController.swift; sourceTree = "<group>"; };
+		843DAA522A9E666B002A0CD0 /* Doors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Doors.swift; sourceTree = "<group>"; };
+		843DAA542AA11C24002A0CD0 /* Radar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radar.swift; sourceTree = "<group>"; };
 		84C01A1D2A97E8C60070D2E5 /* Mini2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mini2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84C01A202A97E8C60070D2E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84C01A222A97E8C60070D2E5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -97,6 +111,7 @@
 				B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */,
 				B3F9A4F12A9BB40800B7E7F1 /* LightPuzzleView.swift */,
 				B3F9A5042AA2593200B7E7F1 /* PipePuzzleView.swift */,
+				843DAA522A9E666B002A0CD0 /* Doors.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -107,6 +122,11 @@
 				B3F9A4FC2A9BD56500B7E7F1 /* SKMirror.swift */,
 				B3F9A4FE2A9E1D5900B7E7F1 /* SKLightBeam.swift */,
 				B3F9A5022AA258A700B7E7F1 /* SKPipe.swift */,
+				843DA3D82A97EE5E002A0CD0 /* Map.swift */,
+				843DA3DA2A97EE66002A0CD0 /* Room.swift */,
+				843DA3E42A991F29002A0CD0 /* Direction.swift */,
+				843DAA4C2A9D1DF6002A0CD0 /* ContaminationConfig.swift */,
+				843DAA542AA11C24002A0CD0 /* Radar.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -118,6 +138,7 @@
 				B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */,
 				B3F9A4F62A9BB88100B7E7F1 /* LightPuzzleViewController.swift */,
 				B3F9A5062AA2598300B7E7F1 /* PipePuzzleViewController.swift */,
+				843DAA4E2A9D2953002A0CD0 /* RoomViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -222,9 +243,17 @@
 				B3F9A5032AA258A700B7E7F1 /* SKPipe.swift in Sources */,
 				B3F9A5052AA2593200B7E7F1 /* PipePuzzleView.swift in Sources */,
 				B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */,
+				843DAA552AA11C24002A0CD0 /* Radar.swift in Sources */,
+				84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */,
+				843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */,
 				84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */,
+				843DAA4F2A9D2953002A0CD0 /* RoomViewController.swift in Sources */,
+				843DA3D92A97EE5E002A0CD0 /* Map.swift in Sources */,
 				84C01A232A97E8C60070D2E5 /* SceneDelegate.swift in Sources */,
 				B3F9A5072AA2598300B7E7F1 /* PipePuzzleViewController.swift in Sources */,
+				843DA3DB2A97EE66002A0CD0 /* Room.swift in Sources */,
+				843DAA532A9E666B002A0CD0 /* Doors.swift in Sources */,
+				843DAA4D2A9D1DF6002A0CD0 /* ContaminationConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
