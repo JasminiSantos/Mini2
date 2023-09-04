@@ -28,6 +28,17 @@ class Room {
         self.puzzle = false
         self.item = false
     }
+    
+    init(x: Int, y: Int, level: Int = 1, hasPuzzle: Bool) {
+        self.x = x
+        self.y = y
+        self.level = level
+        self.puzzle = hasPuzzle
+        self.monster = false
+        self.visited = false
+        self.blocked = false
+        self.item = false
+    }
 
     func hasMonstro() -> Bool {
         return monster
@@ -52,8 +63,8 @@ class Room {
     func getContaminationLevel() -> Int {
         return self.level
     }
-
 }
+
 enum RoomLayout {
     case basic
     case withMonster

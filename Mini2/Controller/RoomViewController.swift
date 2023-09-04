@@ -45,6 +45,7 @@ class RoomViewController: UIViewController {
         view.addSubview(button)
         return button
     }
+    
     func setupDirectionButtons(frame: CGRect) {
         let buttonSize: CGFloat = frame.size.width
         let padding: CGFloat = 20
@@ -73,26 +74,37 @@ class RoomViewController: UIViewController {
     func updateBackgroundBasedOnVisibleButtons() {
         if !downDoor.isHidden && !upDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_todasportas")
+            
         } else if !downDoor.isHidden && !upDoor.isHidden && !rightDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_meiodireita")
+            
         } else if !downDoor.isHidden && !upDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_meioesquerda")
+            
         } else if !downDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_direitaesquerda")
+            
         } else if !upDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_todasportas")
+            
         } else if !downDoor.isHidden && !upDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_meio")
+            
         } else if !rightDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_direitaesquerda")
+            
         } else if !downDoor.isHidden && !rightDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_direita")
+            
         } else if !downDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_esquerda")
+            
         } else if !upDoor.isHidden && !rightDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_meiodireita")
+            
         } else if !upDoor.isHidden && !leftDoor.isHidden {
             self.changeBackgroundImage(named: "fundo_meioesquerda")
+            
         } else {
             self.changeBackgroundImage(named: "fundo_nada")
         }
@@ -132,6 +144,12 @@ class RoomViewController: UIViewController {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
+    
+//    func addPuzzleImage(named imageName: String) {
+//        let view = UIImageView(image: UIImage(named: imageName))
+//
+//        self.view.addSubview(view)
+//    }
     
     func goToAnotherRoomAnimation(){
         UIView.animate(withDuration: 0.5, animations: {

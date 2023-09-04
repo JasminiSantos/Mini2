@@ -181,7 +181,7 @@ class PipePuzzleScene: SKScene {
             let col = current.col
             var pipe: Rotatable?
             
-            var directions: [Direction] = []
+            var directions: [PipeDirection] = []
             
             if let currentPipe = grid[row][col] as? Rotatable {
                 directions = currentPipe.getPossibleDirections()
@@ -228,7 +228,7 @@ class PipePuzzleScene: SKScene {
         return pipe1.getPossibleDirections().contains(directionFrom1To2) && pipe2.getPossibleDirections().contains(directionFrom2To1)
     }
 
-    func direction(from pos1: GridPosition, to pos2: GridPosition) -> Direction {
+    func direction(from pos1: GridPosition, to pos2: GridPosition) -> PipeDirection {
         if pos1.row == pos2.row {
             if pos1.col < pos2.col {
                 return .right
@@ -247,7 +247,7 @@ class PipePuzzleScene: SKScene {
         fatalError("Positions are not adjacent")
     }
 
-    func opposite(of direction: Direction) -> Direction {
+    func opposite(of direction: PipeDirection) -> PipeDirection {
         switch direction {
         case .up:
             return .down

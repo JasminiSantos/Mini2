@@ -11,10 +11,10 @@ import SpriteKit
 
 protocol Rotatable {
     func rotate()
-    func getPossibleDirections() -> [Direction]
+    func getPossibleDirections() -> [PipeDirection]
 }
 
-enum Direction {
+enum PipeDirection {
     case up, down, left, right
 }
 
@@ -47,7 +47,7 @@ class StraightPipe: SKSpriteNode, Rotatable {
         }
     }
     
-    func getPossibleDirections() -> [Direction] {
+    func getPossibleDirections() -> [PipeDirection] {
         if self.zRotation < (.pi / 2) {
             return [.left, .right]
             
@@ -91,7 +91,7 @@ class LPipe: SKSpriteNode, Rotatable {
         }
     }
     
-    func getPossibleDirections() -> [Direction] {
+    func getPossibleDirections() -> [PipeDirection] {
         if self.zRotation < (.pi / 2) {
             return [.left, .up]
             
@@ -134,7 +134,7 @@ class PointPipe: SKSpriteNode, Rotatable {
         }
     }
     
-    func getPossibleDirections() -> [Direction] {
+    func getPossibleDirections() -> [PipeDirection] {
         return [.down, .left, .right, .up]
     }
 }
