@@ -10,16 +10,19 @@ import SpriteKit
 class PipePuzzleScene: SKScene {
     
     var grid: [[SKSpriteNode?]] = []
-    let rows = 5
-    let cols = 5
+    let rows = 7
+    let cols = 7
     
     override func didMove(to view: SKView) {
         createGrid()
+        shuffleGrid()
     }
     
     func createGrid() {
         let screenWidth = self.size.width
         let screenHeight = self.size.height
+        
+        let guaranteedPath = createGuaranteedPath()
         
         let gridWidth = CGFloat(cols * 55)
         let gridHeight = CGFloat(rows * 55)
@@ -30,7 +33,6 @@ class PipePuzzleScene: SKScene {
         for row in 0..<rows {
             var tempRow: [SKSpriteNode?] = []
             for col in 0..<cols {
-                
                 if row == 0 && col == 0 {
                     let startPipe = PointPipe(isRotatable: false, isStart: true, isEnd: false)
                     startPipe.position = CGPoint(
@@ -53,16 +55,49 @@ class PipePuzzleScene: SKScene {
                     continue
                 }
                 
-                let pipe = createRandomPipe(isRotatable: true, isStart: false, isEnd: false) as! SKSpriteNode
-                
-                pipe.position = CGPoint(
-                    x: xOffset + CGFloat(col * 55),
-                    y: yOffset + CGFloat(row * 55)
-                )
-                tempRow.append(pipe)
-                self.addChild(pipe)
+                if let pipeInfo = guaranteedPath.first(where: { $0.row == row && $0.col == col }) {
+                    // Este bloco cria um cano no caminho garantido
+                    let pipeType = pipeInfo.pipe
+                    var pipe: SKSpriteNode?
+                    
+                    if pipeType == .straight {
+                        pipe = StraightPipe(isRotatable: true, isStart: false, isEnd: false)
+                        
+                    } else if pipeType == .elbow {
+                        pipe = LPipe(isRotatable: true, isStart: false, isEnd: false)
+                    }
+                    
+                    if let pipe = pipe {
+                        pipe.position = CGPoint(x: xOffset + CGFloat(col * 55), y: yOffset + CGFloat(row * 55))
+                        tempRow.append(pipe)
+                        self.addChild(pipe)
+                    }
+                } else {
+                    // Este bloco cria um cano aleatório que não está no caminho garantido
+                    let pipe = createRandomPipe(isRotatable: true, isStart: false, isEnd: false) as! SKSpriteNode
+                    pipe.position = CGPoint(x: xOffset + CGFloat(col * 55), y: yOffset + CGFloat(row * 55))
+                    tempRow.append(pipe)
+                    self.addChild(pipe)
+                }
             }
             grid.append(tempRow)
+        }
+    }
+    
+    func shuffleGrid() {
+        for row in 0..<rows {
+            for col in 0..<cols {
+                if let pipe = grid[row][col] as? StraightPipe {
+                    for _ in 0...[0, 1, 2, 3].randomElement()! {
+                        pipe.rotate()
+                    }
+                    
+                } else if let pipe = grid[row][col] as? LPipe {
+                    for _ in 0...[0, 1, 2, 3].randomElement()! {
+                        pipe.rotate()
+                    }
+                }
+            }
         }
     }
 
@@ -86,22 +121,48 @@ class PipePuzzleScene: SKScene {
 
     func createGuaranteedPath() -> [(row: Int, col: Int, pipe: PipeType)] {
         var path: [(row: Int, col: Int, pipe: PipeType)] = []
+        
+        var prevRow = 0
+        var prevCol = 0
         var currentRow = 0
         var currentCol = 0
-
+        
         while currentRow < rows - 1 || currentCol < cols - 1 {
+            let lastMoveVertical = currentRow != prevRow
+            let lastMoveHorizontal = currentCol != prevCol
+            
+            // Salve os valores atuais para que possam ser comparados depois do próximo movimento
+            prevRow = currentRow
+            prevCol = currentCol
+            
             let moveVertical = Bool.random()
             
-            if moveVertical && currentRow < rows - 1 {
-                path.append((row: currentRow, col: currentCol, pipe: .straight))
+            // Verifique se está na penúltima coluna e force um movimento horizontal
+            if currentCol == cols - 2 && currentRow < rows - 1 {
+                currentRow += 1
+            }
+            // Verifique se está na última coluna e na penúltima linha e force um movimento vertical
+            else if currentCol == cols - 1 && currentRow == rows - 2 {
+                currentRow += 1
+            }
+            // Caso contrário, mova-se normalmente
+            else if moveVertical && currentRow < rows - 1 {
                 currentRow += 1
             } else if currentCol < cols - 1 {
-                path.append((row: currentRow, col: currentCol, pipe: .straight))
                 currentCol += 1
             }
+            
+            let thisMoveVertical = currentRow != prevRow
+            let thisMoveHorizontal = currentCol != prevCol
+            
+            var pipeType: PipeType = .straight
+            
+            if (lastMoveVertical && thisMoveHorizontal) || (lastMoveHorizontal && thisMoveVertical) {
+                pipeType = .elbow
+            }
+            
+            path.append((row: prevRow, col: prevCol, pipe: pipeType))
         }
-        
-        // O último ponto deve ser o ponto final, você pode ajustar o último tipo de cano se necessário.
         path.append((row: rows - 1, col: cols - 1, pipe: .straight))
         
         return path

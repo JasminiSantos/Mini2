@@ -50,6 +50,13 @@ class StraightPipe: SKSpriteNode, Rotatable {
     func getPossibleDirections() -> [Direction] {
         if self.zRotation < (.pi / 2) {
             return [.left, .right]
+            
+        } else if self.zRotation < .pi {
+            return [.down, .up]
+            
+        } else if self.zRotation < (3 * .pi / 2) {
+            return [.right, .left]
+            
         } else {
             return [.up, .down]
         }
