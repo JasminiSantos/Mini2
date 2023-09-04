@@ -5,4 +5,7 @@
 //  Created by Jasmini Rebecca Gomes dos Santos on 28/08/23.
 //
 
-import Foundation
+struct ContaminationConfig {
+    var level: Int
+    var count: Int
+}
