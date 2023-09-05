@@ -46,6 +46,16 @@ class Radar {
         let down = contaminationLevelAt(x: map.currentX, y: map.currentY - 1)
         return [right, diagonal, down]
     }
+    
+    func getMaxNearbyLevel() -> Int? {
+        return [topLeftQuadrantContamination(),
+                topRightQuadrantContamination(),
+                bottomLeftQuadrantContamination(),
+                bottomRightQuadrantContamination()]
+            .flatMap({ $0 })
+            .compactMap({ $0 })
+            .max()
+    }
 }
 
 

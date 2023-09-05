@@ -10,8 +10,8 @@ import SpriteKit
 class PipePuzzleScene: SKScene {
     
     var grid: [[SKSpriteNode?]] = []
-    let rows = 7
-    let cols = 7
+    let rows = 6
+    let cols = 6
     
     override func didMove(to view: SKView) {
         createGrid()

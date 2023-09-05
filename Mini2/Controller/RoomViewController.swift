@@ -37,6 +37,10 @@ class RoomViewController: UIViewController {
 //        let doors = Doors(centerX: view.center.x, centerY: view.center.y)
 //        view.addSubview(doors)
         setupRadarButtons()
+        
+        if let contaminationLevel = radar.getMaxNearbyLevel() {
+            HapticsController.shared.startRadarPulse(for: contaminationLevel)
+        }
     }
     
     func createButton(frame: CGRect, title: String, action: Selector) -> UIButton {
@@ -58,6 +62,7 @@ class RoomViewController: UIViewController {
         downDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY + padding, width: buttonSize, height: buttonSize), title: "downDoor", action: #selector(upButtonTapped))
         
         leftDoor = createButton(frame: CGRect(x: centerX/4 - padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "leftDoor", action: #selector(rightButtonTapped))
+        
         rightDoor = createButton(frame: CGRect(x: centerX*1.5 + padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "rightDoor", action: #selector(leftButtonTapped))
         
         updateButtonVisibility()
@@ -145,12 +150,6 @@ class RoomViewController: UIViewController {
         backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
-//    func addPuzzleImage(named imageName: String) {
-//        let view = UIImageView(image: UIImage(named: imageName))
-//
-//        self.view.addSubview(view)
-//    }
-    
     func goToAnotherRoomAnimation(){
         UIView.animate(withDuration: 0.5, animations: {
             self.view.alpha = 0
@@ -168,8 +167,11 @@ class RoomViewController: UIViewController {
         let padding: CGFloat = 20
 
         topLeftRadarButton = createButton(frame: CGRect(x: padding, y: padding, width: buttonSize.width, height: buttonSize.height), title: "Top Left", action: #selector(topLeftRadarTapped))
+        
         topRightRadarButton = createButton(frame: CGRect(x: padding, y: view.bounds.height - buttonSize.height - padding, width: buttonSize.width, height: buttonSize.height), title: "Top Right", action: #selector(topRightRadarTapped))
+        
         bottomLeftRadarButton = createButton(frame: CGRect(x: view.bounds.width - buttonSize.width - padding, y: padding, width: buttonSize.width, height: buttonSize.height), title: "Bottom Left", action: #selector(bottomLeftRadarTapped))
+        
         bottomRightRadarButton = createButton(frame: CGRect(x: view.bounds.width - buttonSize.width - padding, y: view.bounds.height - buttonSize.height - padding, width: buttonSize.width, height: buttonSize.height), title: "Bottom Right", action: #selector(bottomRightRadarTapped))
         
         topLeftRadarButton.backgroundColor = .blue
@@ -181,7 +183,6 @@ class RoomViewController: UIViewController {
     }
     
     func setColorsForButton(_ button: UIButton, contaminationLevel: Int) {
-        
         let cleanColor = UIColor.gray
         let contaminatedColor = UIColor.green
         
@@ -232,10 +233,16 @@ class RoomViewController: UIViewController {
     }
 
     func updateRadarButtons() {
+        HapticsController.shared.stopRadarPulse()
+        
         displayContaminationLevels(radar.topLeftQuadrantContamination(), for: topLeftRadarButton)
         displayContaminationLevels(radar.topRightQuadrantContamination(), for: topRightRadarButton)
         displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: bottomLeftRadarButton)
         displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: bottomRightRadarButton)
+        
+        if let contaminationLevel = radar.getMaxNearbyLevel() {
+            HapticsController.shared.startRadarPulse(for: contaminationLevel)
+        }
     }
 
     @objc func topLeftRadarTapped() {
@@ -258,12 +265,10 @@ class RoomViewController: UIViewController {
         displayContaminationLevels(levels, for: bottomRightRadarButton)
     }
 
-
     func displayContaminationLevels(_ levels: [Int?]) {
         let message = levels.map { "\($0 ?? -1)" }.joined(separator: ", ")
         let alert = UIAlertController(title: "Contamination Levels", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-    
 }
