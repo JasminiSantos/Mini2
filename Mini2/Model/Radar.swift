@@ -48,13 +48,14 @@ class Radar {
     }
     
     func getMaxNearbyLevel() -> Int? {
-        return [topLeftQuadrantContamination(),
-                topRightQuadrantContamination(),
-                bottomLeftQuadrantContamination(),
-                bottomRightQuadrantContamination()]
-            .flatMap({ $0 })
-            .compactMap({ $0 })
-            .max()
+        return contaminationLevelAt(x: map.currentX, y: map.currentY) == 4 ?
+        5 : [topLeftQuadrantContamination(),
+             topRightQuadrantContamination(),
+             bottomLeftQuadrantContamination(),
+             bottomRightQuadrantContamination()]
+                .flatMap({ $0 })
+                .compactMap({ $0 })
+                .max()
     }
 }
 

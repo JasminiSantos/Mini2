@@ -13,7 +13,7 @@ class ButtonPuzzleViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
     
-    let correctSequence = [1, 2, 3, 4]
+    let correctSequence = [3, 1, 5, 4, 2]
     var currentSequence: [Int] = []
     
     override func loadView() {
@@ -27,21 +27,27 @@ class ButtonPuzzleViewController: UIViewController {
     }
     
     func addToCurrentSequence(_ value: Int) {
-        currentSequence.append(value)
-        
-        if currentSequence.count == correctSequence.count {
-            checkSequence()
+        if !currentSequence.contains(value) {
+            currentSequence.append(value)
+            
+            if currentSequence.count == correctSequence.count {
+                checkSequence()
+            }
         }
     }
 
     func checkSequence() {
         if currentSequence == correctSequence {
-            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .green)
+//            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .green)
             buttonPuzzleView.successImage.tintColor = .green
             
         } else {
-            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .red)
+//            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .red)
             buttonPuzzleView.successImage.tintColor = .red
+            
+            DispatchQueue.main.async {
+                self.buttonPuzzleView.resetPuzzle()
+            }
         }
         currentSequence.removeAll()
     }
@@ -70,5 +76,4 @@ class ButtonPuzzleViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
 }

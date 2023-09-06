@@ -50,9 +50,9 @@ class HapticsController {
         guard supportsHaptics else { return }
         
         // Intensidade e frequência do haptic baseado no nível de contaminação
-        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(contaminationLevel) / 4.0)
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(contaminationLevel) / 3.0)
         
-        let hapticEvent = CHHapticEvent(eventType: .hapticContinuous, parameters: [intensity], relativeTime: 0, duration: 1)
+        let hapticEvent = CHHapticEvent(eventType: .hapticContinuous, parameters: [intensity], relativeTime: 0, duration: 0.05)
         
         do {
             let pattern = try CHHapticPattern(events: [hapticEvent], parameters: [])
@@ -77,12 +77,20 @@ class HapticsController {
         stopRadarPulse()  // Parar o timer atual, se houver
 
         // Frequência do pulso baseada no nível de contaminação.
-        let interval = 5.0 - Double(contaminationLevel)
+        var interval: Double
+        if contaminationLevel == 5 {
+            interval = 0.25
+        }
+        else if contaminationLevel < 4 {
+            interval = 2
+        } else {
+            interval = 0.8
+        }
 
         radarTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.startContinuousHaptics(for: contaminationLevel)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + interval / 4) {
                 self?.stopContinuousHaptics()
             }
         }
