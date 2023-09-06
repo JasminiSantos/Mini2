@@ -23,7 +23,7 @@ class RoomViewController: UIViewController {
     var rightDoor: UIButton!
     var leftDoor: UIButton!
     var puzzleButton: UIButton!
-    
+    let completedPuzzles: Set<Puzzles> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -179,7 +179,6 @@ class RoomViewController: UIViewController {
         }
     }
     
-    
     func goToPuzzle() {
         var nextViewController: UIViewController
         if let puzzle = map.currentRoom?.puzzle {
@@ -189,7 +188,7 @@ class RoomViewController: UIViewController {
             case .pipes:
                 nextViewController = PipePuzzleViewController()
             case .buttons:
-                nextViewController = ButtonPuzzleViewController()
+                nextViewController = ButtonPuzzleViewController(isAvailable: completedPuzzles.contains(.pipes))
             case .none:
                 nextViewController = RoomViewController()
             }

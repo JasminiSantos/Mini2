@@ -9,14 +9,25 @@ import UIKit
 import Combine
 
 class ButtonPuzzleViewController: UIViewController {
-    private var buttonPuzzleView = ButtonPuzzleView()
+    var isAvailable: Bool
+    private var buttonPuzzleView: ButtonPuzzleView?
     
     private var cancellables = Set<AnyCancellable>()
     
     let correctSequence = [3, 1, 5, 4, 2]
     var currentSequence: [Int] = []
     
+    init(isAvailable: Bool, buttonPuzzleView: ButtonPuzzleView? = nil) {
+        self.isAvailable = isAvailable
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented.")
+    }
+    
     override func loadView() {
+        self.buttonPuzzleView = ButtonPuzzleView(frame: view.frame, isAvailable: isAvailable)
         view = buttonPuzzleView
     }
     
@@ -38,15 +49,11 @@ class ButtonPuzzleViewController: UIViewController {
 
     func checkSequence() {
         if currentSequence == correctSequence {
-//            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .green)
-            buttonPuzzleView.successImage.tintColor = .green
-            
+            buttonPuzzleView!.successImage.tintColor = .green
         } else {
-//            blinkAnimation(count: 3, button: self.buttonPuzzleView.buttonHStackView, color: .red)
-            buttonPuzzleView.successImage.tintColor = .red
-            
+            buttonPuzzleView!.successImage.tintColor = .red
             DispatchQueue.main.async {
-                self.buttonPuzzleView.resetPuzzle()
+                self.buttonPuzzleView!.resetPuzzle()
             }
         }
         currentSequence.removeAll()
@@ -69,7 +76,7 @@ class ButtonPuzzleViewController: UIViewController {
     }
 
     private func setupSubscriptions() {
-        buttonPuzzleView.sequencePublisher
+        buttonPuzzleView!.sequencePublisher
             .sink { [weak self] value in
                 self?.addToCurrentSequence(value)
                 

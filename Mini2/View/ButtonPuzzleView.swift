@@ -11,6 +11,22 @@ import Combine
 class ButtonPuzzleView: UIView {
     var sequencePublisher = PassthroughSubject<Int, Never>()
     var pressedButtons: Set<Int> = []
+    var isComplete: CurrentValueSubject<Bool, Never>?
+    var isAvailable = false
+    
+    init(frame: CGRect, isAvailable: Bool) {
+        self.isAvailable = isAvailable
+        super.init(frame: frame)
+        
+        configureAdditionalSettings()
+        addSubviews()
+        setupConstraints()
+        updateButtonStates()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented.")
+    }
     
     @objc
     func handleFirstButtonTap() {
@@ -52,22 +68,22 @@ class ButtonPuzzleView: UIView {
         consoleMatrix.moveBallRightUp()
     }
     
-    var isComplete: CurrentValueSubject<Bool, Never>?
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        addSubviews()
-        setupConstraints()
-        configureAdditionalSettings()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented.")
-    }
-    
     private lazy var consoleMatrix: ButtonPuzzleMatrixView = {
         let view = ButtonPuzzleMatrixView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
+    private lazy var consoleImage: UIImageView = {
+        let view = UIImageView(image: UIImage(named: isAvailable ? "button-console" : "button-access-denied"))
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
+    private lazy var backgroundImage: UIImageView = {
+        let view = UIImageView(image: UIImage(named: "button-background"))
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
@@ -79,7 +95,7 @@ class ButtonPuzzleView: UIView {
         view.setBackgroundImage(UIImage(named: "button-puzzle1"), for: .normal)
         view.addTarget(self, action: #selector(handleFirstButtonTap), for: .touchUpInside)
         view.isUserInteractionEnabled = !pressedButtons.contains(1)
-        
+
         return view
     }()
     
@@ -89,7 +105,7 @@ class ButtonPuzzleView: UIView {
         view.setBackgroundImage(UIImage(named: "button-puzzle2"), for: .normal)
         view.addTarget(self, action: #selector(handleSecondButtonTap), for: .touchUpInside)
         view.isUserInteractionEnabled = !pressedButtons.contains(2)
-        
+
         return view
     }()
     
@@ -99,7 +115,7 @@ class ButtonPuzzleView: UIView {
         view.setBackgroundImage(UIImage(named: "button-puzzle3"), for: .normal)
         view.addTarget(self, action: #selector(handleThirdButtonTap), for: .touchUpInside)
         view.isUserInteractionEnabled = !pressedButtons.contains(3)
-        
+
         return view
     }()
     
@@ -119,10 +135,9 @@ class ButtonPuzzleView: UIView {
         view.setBackgroundImage(UIImage(named: "button-puzzle5"), for: .normal)
         view.addTarget(self, action: #selector(handleFifthButtonTap), for: .touchUpInside)
         view.isUserInteractionEnabled = !pressedButtons.contains(5)
-        view.imageView?.contentMode = .scaleAspectFit
+        
         return view
     }()
-
     
     lazy var buttonHStackView: UIStackView = {
         let view = UIStackView(arrangedSubviews: [
@@ -132,21 +147,20 @@ class ButtonPuzzleView: UIView {
         ])
 
         view.axis         = .horizontal
-//        view.spacing      = 100
-        view.distribution = .fillEqually
-//        view.alignment    = .fill
+        view.spacing      = 25
+        view.distribution = .fill
+        view.alignment    = .center
         view.translatesAutoresizingMaskIntoConstraints = false
-//        view.sizeThatFits(CGSize(width: frame.width * 0.1, height: frame.height * 0.1))
-        view.contentMode = .scaleAspectFit
+        
+        
         return view
     }()
     
     lazy var successImage: UIImageView = {
-        let view = UIImageView()
+        let view = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.image = UIImage(systemName: "checkmark.circle.fill")
         
-        
+        view.frame.size = CGSize(width: 200, height: 200)
         return view
     }()
     
@@ -154,44 +168,69 @@ class ButtonPuzzleView: UIView {
         isComplete?.value = true
     }
     
+    
     private func addSubviews() {
-        addSubview(successImage)
-//        addSubview(firstButton)
-//        addSubview(secondButton)
-//        addSubview(thirdButton)
-//        addSubview(fourthButton)
-//        addSubview(fifthButton)
+        addSubview(backgroundImage)
+//        addSubview(buttonHStackView)
+//        addSubview(successImage)
+        addSubview(firstButton)
+        addSubview(secondButton)
+        addSubview(thirdButton)
+        addSubview(fourthButton)
+        addSubview(fifthButton)
         
-        addSubview(buttonHStackView)
+        addSubview(consoleImage)
         addSubview(consoleMatrix)
     }
     
     private func setupConstraints() {
-        successImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-        successImage.bottomAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        firstButton.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-//        firstButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        secondButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        secondButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        thirdButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        thirdButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        fourthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        fourthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        fifthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        fifthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
+//        buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
+//        buttonHStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 200).setActive()
+//        buttonHStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -200).setActive()
+//        buttonHStackView.heightAnchor.constraint(equalToConstant: 35).setActive()
+//        buttonHStackView.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
         
-        buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-        buttonHStackView.topAnchor.constraint(equalTo: centerYAnchor, constant: 40).setActive()
-        buttonHStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 200).setActive()
-        buttonHStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -200).setActive()
+        backgroundImage.leadingAnchor.constraint(equalTo: leadingAnchor).setActive()
+        backgroundImage.trailingAnchor.constraint(equalTo: trailingAnchor).setActive()
+        backgroundImage.topAnchor.constraint(equalTo: topAnchor).setActive()
+        backgroundImage.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
         
-        consoleMatrix.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-        consoleMatrix.topAnchor.constraint(equalTo: topAnchor).setActive()
+        firstButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 196).setActive()
+        firstButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -41).setActive()
+        firstButton.widthAnchor.constraint(equalToConstant: 48.15).setActive()
+        firstButton.heightAnchor.constraint(equalToConstant: 45).setActive()
+
+        secondButton.leadingAnchor.constraint(equalTo: firstButton.trailingAnchor, constant: 43).setActive()
+        secondButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor).setActive()
+        secondButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
+        secondButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
+        
+        thirdButton.leadingAnchor.constraint(equalTo: secondButton.trailingAnchor, constant: 46).setActive()
+        thirdButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
+        thirdButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
+        thirdButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
+        
+        fourthButton.leadingAnchor.constraint(equalTo: thirdButton.trailingAnchor, constant: 47).setActive()
+        fourthButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
+        fourthButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
+        fourthButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
+        
+        fifthButton.leadingAnchor.constraint(equalTo: fourthButton.trailingAnchor, constant: 51).setActive()
+        fifthButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
+        fifthButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
+        fifthButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
+        
+        consoleImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
+        consoleImage.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
+        consoleImage.widthAnchor.constraint(equalToConstant: consoleImage.frame.width/4).setActive()
+        consoleImage.heightAnchor.constraint(equalToConstant: consoleImage.frame.height/4).setActive()
+        
+        consoleMatrix.centerXAnchor.constraint(equalTo: centerXAnchor, constant: -187).setActive()
+        consoleMatrix.topAnchor.constraint(equalTo: topAnchor, constant: 57).setActive()
+//        consoleMatrix.widthAnchor.constraint(equalToConstant: 400).setActive()
+        
+//        successImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
+//        successImage.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -50).setActive()
     }
     
     private func configureAdditionalSettings() {
@@ -205,10 +244,10 @@ class ButtonPuzzleView: UIView {
     }
     
     private func updateButtonStates() {
-        firstButton.isUserInteractionEnabled = !pressedButtons.contains(1)
-        secondButton.isUserInteractionEnabled = !pressedButtons.contains(2)
-        thirdButton.isUserInteractionEnabled = !pressedButtons.contains(3)
-        fourthButton.isUserInteractionEnabled = !pressedButtons.contains(4)
-        fifthButton.isUserInteractionEnabled = !pressedButtons.contains(5)
+        firstButton.isUserInteractionEnabled = !pressedButtons.contains(1) && isAvailable
+        secondButton.isUserInteractionEnabled = !pressedButtons.contains(2) && isAvailable
+        thirdButton.isUserInteractionEnabled = !pressedButtons.contains(3) && isAvailable
+        fourthButton.isUserInteractionEnabled = !pressedButtons.contains(4) && isAvailable
+        fifthButton.isUserInteractionEnabled = !pressedButtons.contains(5) && isAvailable
     }
 }
