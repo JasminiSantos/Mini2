@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		841743D92AA79D2F002D4731 /* FadeTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743D82AA79D2F002D4731 /* FadeTransitionAnimator.swift */; };
+		841743DB2AA79DA4002D4731 /* FadeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */; };
 		843DA3D92A97EE5E002A0CD0 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3D82A97EE5E002A0CD0 /* Map.swift */; };
 		843DA3DB2A97EE66002A0CD0 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3DA2A97EE66002A0CD0 /* Room.swift */; };
 		843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3E42A991F29002A0CD0 /* Direction.swift */; };
@@ -36,6 +38,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		841743D82AA79D2F002D4731 /* FadeTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransitionAnimator.swift; sourceTree = "<group>"; };
+		841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeNavigationController.swift; sourceTree = "<group>"; };
 		843DA3D82A97EE5E002A0CD0 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		843DA3DA2A97EE66002A0CD0 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		843DA3E42A991F29002A0CD0 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
@@ -145,6 +149,7 @@
 				B3F9A4F62A9BB88100B7E7F1 /* LightPuzzleViewController.swift */,
 				B3F9A5062AA2598300B7E7F1 /* PipePuzzleViewController.swift */,
 				843DAA4E2A9D2953002A0CD0 /* RoomViewController.swift */,
+				841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -154,6 +159,7 @@
 			children = (
 				84C01A202A97E8C60070D2E5 /* AppDelegate.swift */,
 				84C01A222A97E8C60070D2E5 /* SceneDelegate.swift */,
+				841743D82AA79D2F002D4731 /* FadeTransitionAnimator.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -254,9 +260,11 @@
 				B3F9A5012AA2589000B7E7F1 /* PipePuzzleScene.swift in Sources */,
 				B3F9A4F02A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift in Sources */,
 				B3F9A4F72A9BB88100B7E7F1 /* LightPuzzleViewController.swift in Sources */,
+				841743D92AA79D2F002D4731 /* FadeTransitionAnimator.swift in Sources */,
 				B3F9A5032AA258A700B7E7F1 /* SKPipe.swift in Sources */,
 				B3F9A5052AA2593200B7E7F1 /* PipePuzzleView.swift in Sources */,
 				B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */,
+				841743DB2AA79DA4002D4731 /* FadeNavigationController.swift in Sources */,
 				843DAA552AA11C24002A0CD0 /* Radar.swift in Sources */,
 				B379F1C52AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift in Sources */,
 				843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */,

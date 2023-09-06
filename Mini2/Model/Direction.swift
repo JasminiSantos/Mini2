@@ -30,3 +30,10 @@ enum Direction {
         return UIImage(named: imageName)
     }
 }
+
+enum RadarQuadrant {
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
+}

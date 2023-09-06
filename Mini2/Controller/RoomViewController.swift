@@ -21,11 +21,7 @@ class RoomViewController: UIViewController {
     var downDoor: UIButton!
     var rightDoor: UIButton!
     var leftDoor: UIButton!
-    
-    var topLeftRadarButton: UIButton!
-    var topRightRadarButton: UIButton!
-    var bottomLeftRadarButton: UIButton!
-    var bottomRightRadarButton: UIButton!
+    var puzzleButton: UIButton!
 
 
     override func viewDidLoad() {
@@ -41,6 +37,7 @@ class RoomViewController: UIViewController {
         if let contaminationLevel = radar.getMaxNearbyLevel() {
             HapticsController.shared.startRadarPulse(for: contaminationLevel)
         }
+        updateRadarButtons()
     }
     
     func createButton(frame: CGRect, title: String, action: Selector) -> UIButton {
@@ -59,11 +56,14 @@ class RoomViewController: UIViewController {
         
         upDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY - buttonSize/2 - padding, width: buttonSize, height: buttonSize), title: "upDoor", action: #selector(downButtonTapped))
 
-        downDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY + padding, width: buttonSize, height: buttonSize), title: "downDoor", action: #selector(upButtonTapped))
-        
+        downDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.75, width: buttonSize, height: buttonSize/2), title: "downDoor", action: #selector(upButtonTapped))
+
         leftDoor = createButton(frame: CGRect(x: centerX/4 - padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "leftDoor", action: #selector(rightButtonTapped))
         
         rightDoor = createButton(frame: CGRect(x: centerX*1.5 + padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "rightDoor", action: #selector(leftButtonTapped))
+        
+        puzzleButton = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.75, width: buttonSize, height: buttonSize/2), title: "downDoor", action: #selector(puzzleTapped))
+        puzzleButton.backgroundColor = .blue
         
         updateButtonVisibility()
     }
@@ -73,45 +73,52 @@ class RoomViewController: UIViewController {
         upDoor.isHidden = !map.canMove(direction: .down)
         rightDoor.isHidden = !map.canMove(direction: .left)
         leftDoor.isHidden = !map.canMove(direction: .right)
+        puzzleButton.isHidden = map.currentRoom?.puzzle == Puzzles.none || map.currentRoom == nil
         updateBackgroundBasedOnVisibleButtons()
     }
     
+    func removeBackground(){
+        backgroundImageView?.removeFromSuperview()
+    }
+
+    
     func updateBackgroundBasedOnVisibleButtons() {
+        removeBackground()
         if !downDoor.isHidden && !upDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_todasportas")
+            self.setBackgroundImage(named: "fundo_todasportas")
             
         } else if !downDoor.isHidden && !upDoor.isHidden && !rightDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_meiodireita")
+            self.setBackgroundImage(named: "fundo_meiodireita")
             
         } else if !downDoor.isHidden && !upDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_meioesquerda")
+            self.setBackgroundImage(named: "fundo_meioesquerda")
             
         } else if !downDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_direitaesquerda")
+            self.setBackgroundImage(named: "fundo_direitaesquerda")
             
         } else if !upDoor.isHidden && !rightDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_todasportas")
+            self.setBackgroundImage(named: "fundo_todasportas")
             
         } else if !downDoor.isHidden && !upDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_meio")
+            self.setBackgroundImage(named: "fundo_meio")
             
         } else if !rightDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_direitaesquerda")
+            self.setBackgroundImage(named: "fundo_direitaesquerda")
             
         } else if !downDoor.isHidden && !rightDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_direita")
+            self.setBackgroundImage(named: "fundo_direita")
             
         } else if !downDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_esquerda")
+            self.setBackgroundImage(named: "fundo_esquerda")
             
         } else if !upDoor.isHidden && !rightDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_meiodireita")
+            self.setBackgroundImage(named: "fundo_meiodireita")
             
         } else if !upDoor.isHidden && !leftDoor.isHidden {
-            self.changeBackgroundImage(named: "fundo_meioesquerda")
+            self.setBackgroundImage(named: "fundo_meioesquerda")
             
         } else {
-            self.changeBackgroundImage(named: "fundo_nada")
+            self.setBackgroundImage(named: "fundo_nada")
         }
     }
 
@@ -136,18 +143,30 @@ class RoomViewController: UIViewController {
     }
     
     func setBackgroundImage(named imageName: String){
-        backgroundImageView = UIImageView(frame: self.view.bounds)
-        backgroundImageView.image = UIImage(named: imageName)
-        backgroundImageView.contentMode = .scaleAspectFill
-        backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        backgroundImageView = addBackgroundImage(named: imageName)
+        
+        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzle.puzzleImageName ?? "")
+        backgroundImageView.addSubview(secondaryBackgroundImageView)
+        
+        let radarImage = addBackgroundImage(named: "asset_radar")
+        backgroundImageView.addSubview(radarImage)
+        if let door = downDoor, !door.isHidden {
+            let downImage = addBackgroundImage(named: "asset_botaosalasul")
+            backgroundImageView.addSubview(downImage)
+        }
+        
         self.view.addSubview(backgroundImageView)
         self.view.sendSubviewToBack(backgroundImageView)
     }
+
     
-    func changeBackgroundImage(named imageName: String){
-        backgroundImageView.image = UIImage(named: imageName)
-        backgroundImageView.contentMode = .scaleAspectFill
-        backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    func addBackgroundImage(named imageName: String)-> UIImageView{
+        var imageBackground: UIImageView!
+        imageBackground = UIImageView(frame: self.view.bounds)
+        imageBackground.image = UIImage(named: imageName)
+        imageBackground.contentMode = .scaleAspectFill
+        imageBackground.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        return imageBackground
     }
     
     func goToAnotherRoomAnimation(){
@@ -162,6 +181,7 @@ class RoomViewController: UIViewController {
         }
     }
     
+
     func setupRadarButtons() {
         let buttonSize: CGSize = CGSize(width: 100, height: 50)
         let padding: CGFloat = 20
@@ -203,43 +223,77 @@ class RoomViewController: UIViewController {
             button.backgroundColor = cleanColor
             button.setBackgroundImage(nil, for: .normal)  // clear background image
             button.setTitleColor(UIColor.black, for: .normal)
+      }
+
+    func goToPuzzle() {
+        var nextViewController: UIViewController
+        if let puzzle = map.currentRoom?.puzzle {
+            switch puzzle {
+                case .light:
+                    nextViewController = LightPuzzleViewController()
+                case .pipes:
+                    nextViewController = PipePuzzleViewController()
+                case .buttons:
+                    nextViewController = ButtonPuzzleViewController()
+                case .none:
+                    nextViewController = RoomViewController()
+            }
+            
+            if let navController = self.navigationController as? FadeNavigationController {
+                navController.pushViewController(nextViewController, animated: true)
+            }
+        }
+    }
+    
+    func setRadarImages(_ quadrant: RadarQuadrant, contaminationLevel: Int) {
+
+        let commonImages = ["asset_interfaceSecundaria_vazia_1", "asset_interfaceSecundaria_vazia_2", "asset_interfaceSecundaria_vazia_3"]
+        commonImages.forEach { backgroundImageView.addSubview(addBackgroundImage(named: $0)) }
+
+        let imageMappings: [Int: [RadarQuadrant: String]] = [
+            2: [
+                .topLeft: "asset_interfaceprincipal_niveis2e3_1",
+                .topRight: "asset_interfaceprincipal_niveis2e3_4",
+                .bottomLeft: "asset_interfaceprincipal_niveis2e3_2",
+                .bottomRight: "asset_interfaceprincipal_niveis2e3_3"
+            ],
+            3: [
+                .topLeft: "asset_interfaceprincipal_niveis2e3_1",
+                .topRight: "asset_interfaceprincipal_niveis2e3_4",
+                .bottomLeft: "asset_interfaceprincipal_niveis2e3_2",
+                .bottomRight: "asset_interfaceprincipal_niveis2e3_3"
+            ],
+            4: [
+                .topLeft: "asset_interfaceprincipal_nivel4_1",
+                .topRight: "asset_interfaceprincipal_nivel4_4",
+                .bottomLeft: "asset_interfaceprincipal_nivel4_2",
+                .bottomRight: "asset_interfaceprincipal_nivel4_3"
+            ]
+        ]
+
+        if let imageName = imageMappings[contaminationLevel]?[quadrant] {
+            backgroundImageView.addSubview(addBackgroundImage(named: imageName))
         }
     }
 
-
-    func createHalfColoredImage(color1: UIColor, color2: UIColor) -> UIImage? {
-        let size = CGSize(width: 100, height: 50)
-        UIGraphicsBeginImageContext(size)
-        
-        color1.setFill()
-        UIRectFill(CGRect(x: 0, y: 0, width: size.width / 2, height: size.height))
-        
-        color2.setFill()
-        UIRectFill(CGRect(x: size.width / 2, y: 0, width: size.width / 2, height: size.height))
-        
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return image
-    }
-
     
-    func displayContaminationLevels(_ levels: [Int?], for button: UIButton) {
+    func displayContaminationLevels(_ levels: [Int?], for quadrant: RadarQuadrant) {
         if let highestContamination = levels.compactMap({ $0 }).max() {
-            setColorsForButton(button, contaminationLevel: highestContamination)
+            setRadarImages(quadrant, contaminationLevel: highestContamination)
         } else {
-            setColorsForButton(button, contaminationLevel: 0)
+            setRadarImages(quadrant, contaminationLevel: 0)
         }
     }
 
     func updateRadarButtons() {
-        HapticsController.shared.stopRadarPulse()
+
+        HapticsController.shared.stopRadarPulse() 
         
-        displayContaminationLevels(radar.topLeftQuadrantContamination(), for: topLeftRadarButton)
-        displayContaminationLevels(radar.topRightQuadrantContamination(), for: topRightRadarButton)
-        displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: bottomLeftRadarButton)
-        displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: bottomRightRadarButton)
-        
+        displayContaminationLevels(radar.topLeftQuadrantContamination(), for: .topLeft)
+        displayContaminationLevels(radar.topRightQuadrantContamination(), for: .topRight)
+        displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: .bottomLeft)
+        displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: .bottomRight)
+      
         if let contaminationLevel = radar.getMaxNearbyLevel() {
             HapticsController.shared.startRadarPulse(for: contaminationLevel)
         }
@@ -259,10 +313,9 @@ class RoomViewController: UIViewController {
         let levels = radar.bottomLeftQuadrantContamination()
         displayContaminationLevels(levels, for: bottomLeftRadarButton)
     }
-
-    @objc func bottomRightRadarTapped() {
-        let levels = radar.bottomRightQuadrantContamination()
-        displayContaminationLevels(levels, for: bottomRightRadarButton)
+    
+    @objc func puzzleTapped() {
+        goToPuzzle()
     }
 
     func displayContaminationLevels(_ levels: [Int?]) {
