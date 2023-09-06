@@ -80,7 +80,6 @@ class SKLightBeam: SKShapeNode {
         let determinant = dA.dx * dB.dy - dA.dy * dB.dx
         
         if abs(determinant) < 1e-6 {
-            // Linhas são paralelas
             return nil
         }
         
@@ -97,7 +96,6 @@ class SKLightBeam: SKShapeNode {
             return intersectionPoint
         }
         
-        // O ponto de interseção está fora dos segmentos de linha
         return nil
     }
     

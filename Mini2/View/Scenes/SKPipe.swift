@@ -7,8 +7,6 @@
 
 import SpriteKit
 
-import SpriteKit
-
 protocol Rotatable {
     func rotate()
     func getPossibleDirections() -> [PipeDirection]
@@ -114,7 +112,7 @@ class PointPipe: SKSpriteNode, Rotatable {
     var isFull: Bool = false
     
     class var defaultTexture: SKTexture {
-        return SKTexture(imageNamed: "T_pipe")
+        return SKTexture(imageNamed: "Point_pipe")
     }
     
     required init(isRotatable: Bool, isStart: Bool, isEnd: Bool) {

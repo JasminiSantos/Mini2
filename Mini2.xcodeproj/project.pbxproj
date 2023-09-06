@@ -21,6 +21,8 @@
 		84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C01A242A97E8C60070D2E5 /* ViewController.swift */; };
 		84C01A2A2A97E8C70070D2E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84C01A292A97E8C70070D2E5 /* Assets.xcassets */; };
 		84C01A2D2A97E8C70070D2E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84C01A2B2A97E8C70070D2E5 /* LaunchScreen.storyboard */; };
+		B379F1C32AA7A3FB00694EB1 /* HapticsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B379F1C22AA7A3FB00694EB1 /* HapticsController.swift */; };
+		B379F1C52AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */; };
 		B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */; };
 		B3F9A4EE2A991C5D00B7E7F1 /* ButtonPuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */; };
 		B3F9A4F02A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */; };
@@ -52,6 +54,8 @@
 		84C01A292A97E8C70070D2E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84C01A2C2A97E8C70070D2E5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84C01A2E2A97E8C70070D2E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B379F1C22AA7A3FB00694EB1 /* HapticsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsController.swift; sourceTree = "<group>"; };
+		B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleMatrixView.swift; sourceTree = "<group>"; };
 		B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleViewController.swift; sourceTree = "<group>"; };
 		B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleView.swift; sourceTree = "<group>"; };
 		B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
@@ -96,6 +100,7 @@
 		84C01A1F2A97E8C60070D2E5 /* Mini2 */ = {
 			isa = PBXGroup;
 			children = (
+				B379F1C12AA7A3E200694EB1 /* Shared */,
 				84C01A372A97EA420070D2E5 /* Common */,
 				84C01A362A97EA0F0070D2E5 /* Controller */,
 				84C01A352A97EA090070D2E5 /* Model */,
@@ -116,6 +121,7 @@
 				B3F9A4F12A9BB40800B7E7F1 /* LightPuzzleView.swift */,
 				B3F9A5042AA2593200B7E7F1 /* PipePuzzleView.swift */,
 				843DAA522A9E666B002A0CD0 /* Doors.swift */,
+				B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -156,6 +162,14 @@
 				841743D82AA79D2F002D4731 /* FadeTransitionAnimator.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		B379F1C12AA7A3E200694EB1 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B379F1C22AA7A3FB00694EB1 /* HapticsController.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		B3F9A4F32A9BB49400B7E7F1 /* Scenes */ = {
@@ -252,6 +266,7 @@
 				B3F9A4FB2A9BBB7E00B7E7F1 /* LightPuzzleScene.swift in Sources */,
 				841743DB2AA79DA4002D4731 /* FadeNavigationController.swift in Sources */,
 				843DAA552AA11C24002A0CD0 /* Radar.swift in Sources */,
+				B379F1C52AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift in Sources */,
 				843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */,
 				84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */,
 				843DAA4F2A9D2953002A0CD0 /* RoomViewController.swift in Sources */,
@@ -261,6 +276,7 @@
 				843DA3DB2A97EE66002A0CD0 /* Room.swift in Sources */,
 				843DAA532A9E666B002A0CD0 /* Doors.swift in Sources */,
 				843DAA4D2A9D1DF6002A0CD0 /* ContaminationConfig.swift in Sources */,
+				B379F1C32AA7A3FB00694EB1 /* HapticsController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
