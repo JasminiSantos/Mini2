@@ -20,7 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
                 
         let startViewController = RoomViewController()
-        let navigationController = UINavigationController(rootViewController: startViewController)
+//        let navigationController = UINavigationController(rootViewController: startViewController)
+        let navigationController = FadeNavigationController(rootViewController: startViewController)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }

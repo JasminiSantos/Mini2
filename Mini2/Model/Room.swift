@@ -13,10 +13,11 @@ class Room {
     var monster: Bool
     var visited: Bool
     var blocked: Bool
-    var puzzle: Bool
+    var puzzle: Puzzles = .none
     var item: Bool
     var level: Int
-    var layout: RoomLayout = .basic
+    
+    private(set) var backgroundImageName: String = ""
 
     init(x: Int, y: Int, level: Int = 1) {
         self.x = x
@@ -25,19 +26,20 @@ class Room {
         self.monster = false
         self.visited = false
         self.blocked = false
-        self.puzzle = false
+        self.puzzle = .none
         self.item = false
     }
     
-    init(x: Int, y: Int, level: Int = 1, hasPuzzle: Bool) {
+    init(x: Int, y: Int, level: Int = 1, puzzle: Puzzles) {
         self.x = x
         self.y = y
         self.level = level
-        self.puzzle = hasPuzzle
+        self.puzzle = puzzle
         self.monster = false
         self.visited = false
         self.blocked = false
         self.item = false
+        self.backgroundImageName = puzzle.puzzleImageName
     }
 
     func hasMonstro() -> Bool {
@@ -48,7 +50,7 @@ class Room {
         self.monster = true
     }
 
-    func setPuzzle(_ puzzle: Bool) {
+    func setPuzzle(_ puzzle: Puzzles) {
         self.puzzle = puzzle
     }
 
@@ -65,8 +67,29 @@ class Room {
     }
 }
 
-enum RoomLayout {
-    case basic
-    case withMonster
-    case withPuzzle
+enum Puzzles {
+    case pipes
+    case light
+    case buttons
+    case none
+    
+    var puzzleImageName: String {
+        switch self {
+            case .pipes:
+                return "asset_puzzletubos_fechado"
+            case .light:
+                return "asset_puzzleluzes"
+            case .buttons:
+                return "asset_puzzlebotoes"
+            case .none:
+                return getRandomBackgroundImageName()
+        }
+    }
+    private func getRandomBackgroundImageName() -> String {
+        let backgroundImages = ["asset_cadeira", "asset_mesacompiuter", "asset_mesacompiuter", "asset_tubulacao"]
+        return backgroundImages.randomElement() ?? "asset_tubulacao"
+    }
+    var puzzleUIImage: UIImage? {
+        return UIImage(named: puzzleImageName)
+    }
 }

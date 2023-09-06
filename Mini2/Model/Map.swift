@@ -50,7 +50,16 @@ class Map {
             var row: [Room] = []
             for y in 0..<columns {
                 let room = Room(x: x, y: y)
-                
+//                print("x = \(x) y = \(y)")
+                if x == 0 && y == 1{
+                    room.setPuzzle(.pipes)
+                }
+                else if x == 1 && y == 2 {
+                    room.setPuzzle(.buttons)
+                }
+                else if x == 2 && y == 0 {
+                    room.setPuzzle(.light)
+                }
                 if x == 0 && (y == 0 || y == 1) {
                     room.setContaminationLevel(1)
                     if let index = contaminationLevels.firstIndex(of: 1) {
