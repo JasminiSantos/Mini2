@@ -156,11 +156,6 @@ class ButtonPuzzleView: UIView {
     
     private func addSubviews() {
         addSubview(successImage)
-//        addSubview(firstButton)
-//        addSubview(secondButton)
-//        addSubview(thirdButton)
-//        addSubview(fourthButton)
-//        addSubview(fifthButton)
         
         addSubview(buttonHStackView)
         addSubview(consoleMatrix)
@@ -169,21 +164,6 @@ class ButtonPuzzleView: UIView {
     private func setupConstraints() {
         successImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
         successImage.bottomAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        firstButton.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-//        firstButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        secondButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        secondButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        thirdButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        thirdButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        fourthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        fourthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//
-//        fifthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
-//        fifthButton.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
         
         buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
         buttonHStackView.topAnchor.constraint(equalTo: centerYAnchor, constant: 40).setActive()
