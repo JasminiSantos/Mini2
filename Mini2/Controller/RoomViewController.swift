@@ -8,6 +8,7 @@
 import UIKit
 
 class RoomViewController: UIViewController {
+    public var gameManager: GameManager!
     var backgroundImageView: UIImageView!
     var radar: Radar!
     var map = Map(rows: 3, columns: 3, contaminationConfig: [
@@ -30,9 +31,6 @@ class RoomViewController: UIViewController {
         let doorsFrame = CGRect(x: view.center.x - 50, y: view.center.y - 50, width: 100, height: 100)
         setBackgroundImage(named: "fundo_todasportas")
         setupDirectionButtons(frame: doorsFrame)
-        //        let doors = Doors(centerX: view.center.x, centerY: view.center.y)
-        //        view.addSubview(doors)
-        //        setupRadarButtons()
         
         if let contaminationLevel = radar.getMaxNearbyLevel() {
             HapticsController.shared.startRadarPulse(for: contaminationLevel)
@@ -62,8 +60,8 @@ class RoomViewController: UIViewController {
         
         rightDoor = createButton(frame: CGRect(x: centerX*1.5 + padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "rightDoor", action: #selector(leftButtonTapped))
         
-        puzzleButton = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.75, width: buttonSize, height: buttonSize/2), title: "downDoor", action: #selector(puzzleTapped))
-        puzzleButton.backgroundColor = .blue
+        puzzleButton = createButton(frame: CGRect(x: centerX/2 - padding, y: centerY/2, width: buttonSize*1.5, height: buttonSize*2), title: "downDoor", action: #selector(puzzleTapped))
+//        puzzleButton.backgroundColor = .blue
         
         updateButtonVisibility()
     }
