@@ -143,7 +143,7 @@ class RoomViewController: UIViewController {
     func setBackgroundImage(named imageName: String){
         backgroundImageView = addBackgroundImage(named: imageName)
         
-        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzle.puzzleImageName ?? "")
+        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzleImageName ?? "")
         backgroundImageView.addSubview(secondaryBackgroundImageView)
         
         let radarImage = addBackgroundImage(named: "asset_radar")

@@ -17,7 +17,7 @@ class Room {
     var item: Bool
     var level: Int
     
-    private(set) var backgroundImageName: String = ""
+    var puzzleImageName: String = ""
 
     init(x: Int, y: Int, level: Int = 1) {
         self.x = x
@@ -39,7 +39,6 @@ class Room {
         self.visited = false
         self.blocked = false
         self.item = false
-        self.backgroundImageName = puzzle.puzzleImageName
     }
 
     func hasMonstro() -> Bool {
