@@ -12,8 +12,8 @@ class ButtonPuzzleMatrixView: UIView {
     var cellViews: [[UIView]] = []
     let numRows = 3
     let numCols = 4
-    var cellWidth: CGFloat = 50
-    var cellHeight: CGFloat = 50
+    var cellWidth: CGFloat = 86
+    var cellHeight: CGFloat = 64
     var currentRow: Int = 0
     var currentCol: Int = 0
     
@@ -36,7 +36,7 @@ class ButtonPuzzleMatrixView: UIView {
             var cellRow: [UIView] = []
             for col in 0..<numCols {
                 let cell = UIView()
-                cell.backgroundColor = .red // ou qualquer outra cor
+                cell.alpha = 0.3
                 cell.frame = CGRect(x: CGFloat(col) * cellWidth,
                                     y: CGFloat(row) * cellHeight,
                                     width: cellWidth,
@@ -49,19 +49,26 @@ class ButtonPuzzleMatrixView: UIView {
     }
     
     private func setupGreenBall() {
-        greenBall = UIImageView(image: UIImage(systemName: "circle")) // substitua "greenBall" pelo nome do seu asset
-        greenBall.frame = CGRect(x: 0, y: 0, width: cellWidth, height: cellHeight) // posição inicial
+        greenBall = UIImageView(image: UIImage(named: "button-greenball"))
+        greenBall.frame = CGRect(x: 0, y: 0, width: greenBall.frame.width / 4, height: greenBall.frame.height / 4)
         addSubview(greenBall)
     }
     
     func moveGreenBallTo(row: Int, col: Int) {
-        let newX = CGFloat(col) * cellWidth
-        let newY = CGFloat(row) * cellHeight
+        var newX = CGFloat(col) * cellWidth + (cellWidth - greenBall.frame.width) / 2
+        var newY = CGFloat(row) * cellHeight + (cellHeight - greenBall.frame.height) / 2
+        
+        if row == 0 && col == 2 {
+            newX += 0.5
+            newY += 6.5
+        }
+        
         greenBall.frame.origin = CGPoint(x: newX, y: newY)
         
         currentRow = row
         currentCol = col
     }
+
     
     func moveBallDown() {
         var newRow = currentRow + 2
