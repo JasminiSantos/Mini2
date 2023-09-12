@@ -9,9 +9,20 @@ import UIKit
 import SpriteKit
 
 class PipePuzzleView: UIView {
+    var popToParentView: () -> Void = {}
+    
     lazy var skView: SKView = {
         let view = SKView(frame: self.frame)
         view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
+    private lazy var exitButton: UIButton = {
+        let view = UIButton()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        view.addTarget(self, action: #selector(handleExitButtonTap), for: .touchUpInside)
         
         return view
     }()
@@ -27,8 +38,14 @@ class PipePuzzleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc
+    func handleExitButtonTap() {
+        popToParentView()
+    }
+    
     private func addSubviews() {
-        self.addSubview(skView)
+        addSubview(skView)
+        addSubview(exitButton)
     }
     
     private func setupConstraints() {
@@ -36,6 +53,11 @@ class PipePuzzleView: UIView {
         skView.topAnchor.constraint(equalTo: topAnchor).setActive()
         skView.leadingAnchor.constraint(equalTo: leadingAnchor).setActive()
         skView.trailingAnchor.constraint(equalTo: trailingAnchor).setActive()
+        
+        exitButton.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
+        exitButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -70).setActive()
+        exitButton.heightAnchor.constraint(equalToConstant: 75).setActive()
+        exitButton.widthAnchor.constraint(equalToConstant: 75).setActive()
     }
     
     func setupScene() {

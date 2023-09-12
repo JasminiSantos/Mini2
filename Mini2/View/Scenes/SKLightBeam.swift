@@ -88,7 +88,7 @@ class SKLightBeam: SKShapeNode {
         
         
         // mudei u de 0 para 0.001
-        if t >= 0 && t <= 1 && u >= 0.001 && u <= 1.25 {
+        if t >= 0 && t <= 1 && u >= 0.0001 && u <= 1.25 {
             let intersectionPoint = CGPoint(
                 x: A1.x + t * dA.dx,
                 y: A1.y + t * dA.dy

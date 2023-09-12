@@ -12,6 +12,8 @@ protocol SKMirrorDelegate: AnyObject {
 }
 
 class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
+    let background = SKSpriteNode(imageNamed: "light-background")
+    let backgroundFrame = SKSpriteNode(imageNamed: "light-frame")
     var lightBeam:          SKLightBeam!
     var mirror:             SKMirror!
     var rotatingMirror:     SKMirror?
@@ -30,7 +32,12 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     var mirror4: SKMirror!
     
     class CompletionPoint: SKSpriteNode {
+        var startPoint: CGPoint
+        var endPoint:   CGPoint
+        
         init(position: CGPoint, size: CGSize) {
+            self.startPoint = position
+            self.endPoint = CGPoint(x: position.x + size.width, y: position.y + size.height)
             super.init(texture: nil, color: .green, size: size)
             self.position = position
         }
@@ -44,12 +51,14 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = .zero
         
+        addBackground()
         addLightBeam()
         addMirror()
         addCompletionPoint()
         addPanRecognizer()
         handleMirrorAndLightContact(mirror: mirror, lightBeam: lightBeam)
         lights.append(lightBeam)
+        addBackgroundFrame()
     }
     
     func handleMirrorAndLightContact(mirror: SKMirror, lightBeam: SKLightBeam) {
@@ -62,6 +71,19 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         collisionFound = true
     }
     
+    private func addBackground() {
+        background.size = frame.size
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(background)
+    }
+    
+    private func addBackgroundFrame() {
+        backgroundFrame.size = frame.size
+        backgroundFrame.position = CGPoint(x: frame.midX, y: frame.midY)
+        backgroundFrame.zPosition = 100
+        addChild(backgroundFrame)
+    }
+    
     private func addLightBeam() {
         let startPoint = CGPoint(x: frame.minX + 20, y: frame.midY)
         let endPoint   = CGPoint(x: frame.maxX - 20, y: frame.midY)
@@ -71,30 +93,30 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     }
     
     private func addMirror() {
-        mirror = SKMirror(position: CGPoint(x: frame.midX, y: frame.midY + 10), size: CGSize(width: 10, height: 100), rotation: 0)
+        mirror = SKMirror(position: CGPoint(x: frame.midX, y: frame.midY - 25), size: CGSize(width: 10, height: 100), rotation: 0)
         mirror.zPosition = 64
         mirror.delegate = self
         
-        mirror2 = SKMirror(position: CGPoint(x: frame.midX - 300, y: frame.midY - 150), size: CGSize(width: 10, height: 100), rotation: .pi / 4)
+        mirror2 = SKMirror(position: CGPoint(x: frame.midX - 300, y: frame.midY - 100), size: CGSize(width: 10, height: 100), rotation: .pi / 4)
         mirror2.zPosition = 64
         mirror2.delegate = self
         
-        mirror3 = SKMirror(position: CGPoint(x: frame.midX - 150, y: frame.midY + 150), size: CGSize(width: 10, height: 100), rotation: .pi / 4)
-        mirror3.zPosition = 64
-        mirror3.delegate = self
+//        mirror3 = SKMirror(position: CGPoint(x: frame.midX - 150, y: frame.midY + 150), size: CGSize(width: 10, height: 100), rotation: .pi / 4)
+//        mirror3.zPosition = 64
+//        mirror3.delegate = self
         
-        mirror4 = SKMirror(position: CGPoint(x: frame.midX + 300, y: frame.midY - 110), size: CGSize(width: 10, height: 100), rotation: -.pi / 4)
+        mirror4 = SKMirror(position: CGPoint(x: frame.midX + 140, y: frame.midY + 110), size: CGSize(width: 10, height: 100), rotation: -.pi / 4)
         mirror4.zPosition = 64
         mirror4.delegate = self
         
         addChild(mirror)
         addChild(mirror2)
-        addChild(mirror3)
+//        addChild(mirror3)
         addChild(mirror4)
     }
     
     func addCompletionPoint() {
-        completionPoint = CompletionPoint(position: CGPoint(x: frame.midX + 350, y: frame.midY + 100), size: CGSize(width: 50, height: 50))
+        completionPoint = CompletionPoint(position: CGPoint(x: frame.maxX * 0.86, y: frame.maxY * 0.765), size: CGSize(width: 5, height: 35))
         addChild(completionPoint)
     }
     
@@ -112,10 +134,10 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         
         lights.removeAll(where: {$0 != lightBeam})
         
-        let mirrors: [SKMirror]  = [mirror, mirror2, mirror3, mirror4]
+        let mirrors: [SKMirror]  = [mirror, mirror2, mirror4]
         mirror.id = "m1"
         mirror2.id = "m2"
-        mirror3.id = "m3"
+//        mirror3.id = "m3"
         mirror4.id = "m4"
         
         var checkedPairs = Array<String>()
@@ -160,14 +182,19 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         }
         
         for light in lights {
-            if handleCompletionPointAndLightContact(completionPoint: completionPoint, lightBeam: light) {
+            let cp = handleCompletionPointAndLightContact(completionPoint: completionPoint, lightBeam: light)
+            if cp != nil {
+                self.view?.removeGestureRecognizer(panGestureRecognizer)
+                lights.last!.endPoint = cp!
+                lights.last!.updatePath()
                 puzzleCompleted = true
+                GameManager.shared.markPuzzleLightAsCompleted()
+                
                 break
             }
         }
         
         if puzzleCompleted {
-            self.view?.removeGestureRecognizer(panGestureRecognizer)
             for light in lights {
                 light.strokeColor = .green
             }
@@ -181,43 +208,11 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         lightBeam.path = path.cgPath
     }
     
-    func handleCompletionPointAndLightContact(completionPoint: CompletionPoint, lightBeam: SKLightBeam) -> Bool {
-        return lineIntersectsCircle(
-            start: lightBeam.startPoint,
-            end: lightBeam.endPoint,
-            center: completionPoint.position,
-            radius: completionPoint.size.width / 2
-        )
-    }
-    
-    func lineIntersectsCircle(start: CGPoint, end: CGPoint, center: CGPoint, radius: CGFloat) -> Bool {
-        let d = end - start
-        let f = start - center
-
-        let a = dot(d, d)
-        let b = 2.0 * dot(f, d)
-        let c = dot(f, f) - radius * radius
-
-        let discriminant = b * b - 4 * a * c
-
-        if discriminant < 0 {
-            return false
-        }
-
-        let discriminantSqrt = sqrt(discriminant)
-        let t1 = (-b + discriminantSqrt) / (2 * a)
-        let t2 = (-b - discriminantSqrt) / (2 * a)
-
-        if (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1) {
-            return true
-        }
-
-        return false
-    }
-
-
-    func dot(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
-        return a.x * b.x + a.y * b.y
+    func handleCompletionPointAndLightContact(completionPoint: CompletionPoint, lightBeam: SKLightBeam) -> CGPoint? {
+        return lightBeam.findIntersection(A1: lightBeam.startPoint,
+                                         B1: lightBeam.endPoint,
+                                         A2: completionPoint.startPoint,
+                                         B2: completionPoint.endPoint) ?? nil
     }
 }
 

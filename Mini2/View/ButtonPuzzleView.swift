@@ -9,6 +9,8 @@ import UIKit
 import Combine
 
 class ButtonPuzzleView: UIView {
+    var popToParentView: () -> Void = {}
+    
     var sequencePublisher = PassthroughSubject<Int, Never>()
     var pressedButtons: Set<Int> = []
     var isComplete: CurrentValueSubject<Bool, Never>?
@@ -68,8 +70,22 @@ class ButtonPuzzleView: UIView {
         consoleMatrix.moveBallRightUp()
     }
     
-    private lazy var consoleMatrix: ButtonPuzzleMatrixView = {
-        let view = ButtonPuzzleMatrixView()
+    @objc
+    func handleExitButtonTap() {
+        popToParentView()
+    }
+    
+    private lazy var exitButton: UIButton = {
+        let view = UIButton()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        view.addTarget(self, action: #selector(handleExitButtonTap), for: .touchUpInside)
+        
+        return view
+    }()
+    
+    lazy var consoleMatrix: ButtonPuzzleMatrixView = {
+        let view = ButtonPuzzleMatrixView(frame: self.frame, isAvailable: self.isAvailable)
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
@@ -179,6 +195,8 @@ class ButtonPuzzleView: UIView {
         addSubview(fourthButton)
         addSubview(fifthButton)
         
+        addSubview(exitButton)
+        
         addSubview(consoleImage)
         addSubview(consoleMatrix)
     }
@@ -227,10 +245,11 @@ class ButtonPuzzleView: UIView {
         
         consoleMatrix.centerXAnchor.constraint(equalTo: centerXAnchor, constant: -187).setActive()
         consoleMatrix.topAnchor.constraint(equalTo: topAnchor, constant: 57).setActive()
-//        consoleMatrix.widthAnchor.constraint(equalToConstant: 400).setActive()
-        
-//        successImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-//        successImage.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -50).setActive()
+
+        exitButton.topAnchor.constraint(equalTo: topAnchor, constant: 25).setActive()
+        exitButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -25).setActive()
+        exitButton.heightAnchor.constraint(equalToConstant: 75).setActive()
+        exitButton.widthAnchor.constraint(equalToConstant: 75).setActive()
     }
     
     private func configureAdditionalSettings() {

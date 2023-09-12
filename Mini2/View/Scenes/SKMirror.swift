@@ -13,7 +13,7 @@ class SKMirror: SKSpriteNode {
     var touchArea:    SKShapeNode!
     
     init(position: CGPoint, size: CGSize, rotation: CGFloat) {
-        super.init(texture: nil, color: .gray, size: size)
+        super.init(texture: SKTexture(image: UIImage(named: "light-mirror")!), color: .gray, size: size)
         self.position = position
         self.zRotation = rotation
         addTouchArea()
@@ -24,7 +24,7 @@ class SKMirror: SKSpriteNode {
     }
     
     func addTouchArea() {
-        let radius = max(self.size.width, self.size.height) / 2 + 30
+        let radius = max(self.size.width, self.size.height) / 2
         
         touchArea = SKShapeNode(circleOfRadius: radius)
         touchArea.strokeColor = .clear

@@ -8,9 +8,15 @@
 import UIKit
 import Combine
 
+protocol PuzzleViewControllerDelegate: AnyObject {
+    func puzzleViewControllerDidRequestExit(_ viewController: UIViewController)
+}
+
 class ButtonPuzzleViewController: UIViewController {
     var isAvailable: Bool
     private var buttonPuzzleView: ButtonPuzzleView?
+    
+    weak var delegate: PuzzleViewControllerDelegate?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -27,14 +33,30 @@ class ButtonPuzzleViewController: UIViewController {
     }
     
     override func loadView() {
-        self.buttonPuzzleView = ButtonPuzzleView(frame: view.frame, isAvailable: isAvailable)
+        self.buttonPuzzleView = ButtonPuzzleView(frame: CGRect.zero, isAvailable: isAvailable)
         view = buttonPuzzleView
+        buttonPuzzleView?.popToParentView = { [weak self] in
+            if let self = self {
+                delegate?.puzzleViewControllerDidRequestExit(self)
+            }
+        }
+        navigationItem.hidesBackButton = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        buttonPuzzleView?.frame = view.frame
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupSubscriptions()
+    }
+    
+    @objc
+    func didPressExitButton(from controller: UIViewController) {
+        delegate?.puzzleViewControllerDidRequestExit(self)
     }
     
     func addToCurrentSequence(_ value: Int) {
@@ -49,9 +71,10 @@ class ButtonPuzzleViewController: UIViewController {
 
     func checkSequence() {
         if currentSequence == correctSequence {
-            buttonPuzzleView!.successImage.tintColor = .green
+            GameManager.shared.markPuzzleButtonsAsCompleted()
+//            buttonPuzzleView!.successImage.tintColor = .green
         } else {
-            buttonPuzzleView!.successImage.tintColor = .red
+//            buttonPuzzleView!.successImage.tintColor = .red
             DispatchQueue.main.async {
                 self.buttonPuzzleView!.resetPuzzle()
             }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RoomViewController: UIViewController {
+class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     public var gameManager: GameManager!
     var backgroundImageView: UIImageView!
     var radar: Radar!
@@ -31,6 +31,8 @@ class RoomViewController: UIViewController {
         let doorsFrame = CGRect(x: view.center.x - 50, y: view.center.y - 50, width: 100, height: 100)
         setBackgroundImage(named: "fundo_todasportas")
         setupDirectionButtons(frame: doorsFrame)
+        
+        navigationItem.hidesBackButton = true
         
         if let contaminationLevel = radar.getMaxNearbyLevel() {
             HapticsController.shared.startRadarPulse(for: contaminationLevel)
@@ -157,7 +159,6 @@ class RoomViewController: UIViewController {
         self.view.sendSubviewToBack(backgroundImageView)
     }
     
-    
     func addBackgroundImage(named imageName: String)-> UIImageView{
         var imageBackground: UIImageView!
         imageBackground = UIImageView(frame: self.view.bounds)
@@ -168,6 +169,12 @@ class RoomViewController: UIViewController {
     }
     
     func goToAnotherRoomAnimation(){
+        HapticsController.shared.stopRadarPulse()
+        
+        if let contaminationLevel = radar.getMaxNearbyLevel() {
+            HapticsController.shared.startRadarPulse(for: contaminationLevel)
+        }
+        
         UIView.animate(withDuration: 0.5, animations: {
             self.view.alpha = 0
         }) { _ in
@@ -184,11 +191,17 @@ class RoomViewController: UIViewController {
         if let puzzle = map.currentRoom?.puzzle {
             switch puzzle {
             case .light:
-                nextViewController = LightPuzzleViewController()
+                let lightPuzzleVC = LightPuzzleViewController()
+                lightPuzzleVC.delegate = self
+                nextViewController = lightPuzzleVC
             case .pipes:
-                nextViewController = PipePuzzleViewController()
+                let pipePuzzleVC = PipePuzzleViewController()
+                pipePuzzleVC.delegate = self
+                nextViewController = pipePuzzleVC
             case .buttons:
-                nextViewController = ButtonPuzzleViewController(isAvailable: completedPuzzles.contains(.pipes))
+                let buttonPuzzleVC = ButtonPuzzleViewController(isAvailable: GameManager.shared.isPuzzlePipesCompleted)
+                buttonPuzzleVC.delegate = self
+                nextViewController = buttonPuzzleVC
             case .none:
                 nextViewController = RoomViewController()
             }
@@ -198,6 +211,8 @@ class RoomViewController: UIViewController {
             }
         }
     }
+
+
     
     func setRadarImages(_ quadrant: RadarQuadrant, contaminationLevel: Int) {
         
@@ -241,16 +256,10 @@ class RoomViewController: UIViewController {
     
     func updateRadarButtons() {
         
-        HapticsController.shared.stopRadarPulse()
-        
         displayContaminationLevels(radar.topLeftQuadrantContamination(), for: .topLeft)
         displayContaminationLevels(radar.topRightQuadrantContamination(), for: .topRight)
         displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: .bottomLeft)
         displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: .bottomRight)
-        
-        if let contaminationLevel = radar.getMaxNearbyLevel() {
-            HapticsController.shared.startRadarPulse(for: contaminationLevel)
-        }
     }
     
     @objc
@@ -263,5 +272,9 @@ class RoomViewController: UIViewController {
         let alert = UIAlertController(title: "Contamination Levels", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    func puzzleViewControllerDidRequestExit(_ viewController: UIViewController) {
+        navigationController?.popViewController(animated: true)
     }
 }
