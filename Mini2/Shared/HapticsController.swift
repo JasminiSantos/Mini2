@@ -81,10 +81,10 @@ class HapticsController {
         if contaminationLevel == 5 {
             interval = 0.25
         }
-        else if contaminationLevel < 4 {
-            interval = 2
-        } else {
+        else if contaminationLevel == 4 || contaminationLevel == 3 {
             interval = 0.8
+        } else {
+            interval = 2
         }
 
         radarTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in

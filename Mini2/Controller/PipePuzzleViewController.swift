@@ -10,9 +10,22 @@ import UIKit
 class PipePuzzleViewController: UIViewController {
 
     private var pipePuzzleView = PipePuzzleView()
+    weak var delegate: PuzzleViewControllerDelegate?
     
     override func loadView() {
         view = pipePuzzleView
+        pipePuzzleView.popToParentView = { [weak self] in
+            if let self = self {
+                delegate?.puzzleViewControllerDidRequestExit(self)
+            }
+        }
+        
+        navigationItem.hidesBackButton = true
+    }
+    
+    @objc
+    func didPressExitButton(from controller: UIViewController) {
+        delegate?.puzzleViewControllerDidRequestExit(self)
     }
     
     override func viewDidLoad() {

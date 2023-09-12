@@ -9,13 +9,22 @@ import SpriteKit
 
 class PipePuzzleScene: SKScene {
     
+    let background = SKSpriteNode(imageNamed: "pipes-background")
+    
     var grid: [[SKSpriteNode?]] = []
     let rows = 6
     let cols = 6
     
     override func didMove(to view: SKView) {
+        addBackground()
         createGrid()
-        shuffleGrid()
+        shuffleGrid()   
+    }
+    
+    private func addBackground() {
+        background.size = frame.size
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(background)
     }
     
     func createGrid() {
@@ -114,7 +123,8 @@ class PipePuzzleScene: SKScene {
             }
             
             if checkForCompletion(start: GridPosition(row: 0, col: 0)) {
-                backgroundColor = .green
+                GameManager.shared.markPuzzlePipesAsCompleted()
+                self.isUserInteractionEnabled = false
             }
         }
     }

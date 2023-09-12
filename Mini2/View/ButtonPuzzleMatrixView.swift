@@ -9,6 +9,7 @@ import UIKit
 
 class ButtonPuzzleMatrixView: UIView {
     
+    var isAvailable: Bool = false
     var cellViews: [[UIView]] = []
     let numRows = 3
     let numCols = 4
@@ -20,7 +21,8 @@ class ButtonPuzzleMatrixView: UIView {
     
     var greenBall: UIImageView!
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, isAvailable: Bool) {
+        self.isAvailable = isAvailable
         super.init(frame: frame)
         setupMatrix()
         setupGreenBall()
@@ -51,6 +53,7 @@ class ButtonPuzzleMatrixView: UIView {
     private func setupGreenBall() {
         greenBall = UIImageView(image: UIImage(named: "button-greenball"))
         greenBall.frame = CGRect(x: 0, y: 0, width: greenBall.frame.width / 4, height: greenBall.frame.height / 4)
+        greenBall.alpha = isAvailable ? 1 : 0
         addSubview(greenBall)
     }
     
@@ -118,5 +121,9 @@ class ButtonPuzzleMatrixView: UIView {
     
     func resetBall() {
         moveGreenBallTo(row: 1, col: 0)
+    }
+    
+    func updateBall() {
+        greenBall.alpha = isAvailable ? 1 : 0
     }
 }
