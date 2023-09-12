@@ -53,12 +53,18 @@ class Map {
 //                print("x = \(x) y = \(y)")
                 if x == 0 && y == 1{
                     room.setPuzzle(.pipes)
+                    room.puzzleImageName = Puzzles.pipes.puzzleImageName
                 }
                 else if x == 1 && y == 2 {
                     room.setPuzzle(.buttons)
+                    room.puzzleImageName = Puzzles.buttons.puzzleImageName
                 }
                 else if x == 2 && y == 0 {
                     room.setPuzzle(.light)
+                    room.puzzleImageName = Puzzles.light.puzzleImageName
+                }
+                else {
+                    room.puzzleImageName = Puzzles.none.puzzleImageName
                 }
                 if x == 0 && (y == 0 || y == 1) {
                     room.setContaminationLevel(1)

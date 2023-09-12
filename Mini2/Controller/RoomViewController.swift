@@ -9,7 +9,10 @@ import UIKit
 
 class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     public var gameManager: GameManager!
+    
     var backgroundImageView: UIImageView!
+    var radarImage: UIImageView!
+
     var radar: Radar!
     var map = Map(rows: 3, columns: 3, contaminationConfig: [
         ContaminationConfig(level: 1, count: 2),
@@ -27,7 +30,10 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         radar = Radar(map: map)
+        radarImage = UIImageView()
+        
         let doorsFrame = CGRect(x: view.center.x - 50, y: view.center.y - 50, width: 100, height: 100)
         setBackgroundImage(named: "fundo_todasportas")
         setupDirectionButtons(frame: doorsFrame)
@@ -78,6 +84,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
     
     func removeBackground(){
+        radarImage = UIImageView()
         backgroundImageView?.removeFromSuperview()
     }
     
@@ -145,11 +152,10 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     func setBackgroundImage(named imageName: String){
         backgroundImageView = addBackgroundImage(named: imageName)
         
-        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzle.puzzleImageName ?? "")
+        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzleImageName ?? "")
         backgroundImageView.addSubview(secondaryBackgroundImageView)
         
-        let radarImage = addBackgroundImage(named: "asset_radar")
-        backgroundImageView.addSubview(radarImage)
+        backgroundImageView.addSubview(addBackgroundImage(named: "asset_radar"))
         if let door = downDoor, !door.isHidden {
             let downImage = addBackgroundImage(named: "asset_botaosalasul")
             backgroundImageView.addSubview(downImage)
@@ -241,7 +247,8 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         ]
         
         if let imageName = imageMappings[contaminationLevel]?[quadrant] {
-            backgroundImageView.addSubview(addBackgroundImage(named: imageName))
+            let image = addBackgroundImage(named: imageName)
+            radarImage.addSubview(image)
         }
     }
     
@@ -260,7 +267,36 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         displayContaminationLevels(radar.topRightQuadrantContamination(), for: .topRight)
         displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: .bottomLeft)
         displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: .bottomRight)
+        
+        backgroundImageView.addSubview(radarImage)
+        
+        if let contaminationLevel = radar.getMaxNearbyLevel() {
+            startBlinkingRadar(duration: getInterval(contaminationLevel: contaminationLevel))
+        }
     }
+    
+    func getInterval(contaminationLevel: Int) -> Double{
+        var interval: Double
+        if contaminationLevel == 5 {
+            interval = 0.25
+        }
+        else if contaminationLevel < 4 {
+            interval = 2
+        } else {
+            interval = 0.8
+        }
+        return interval
+    }
+    func startBlinkingRadar(duration: Double) {
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.repeat, .autoreverse], animations: {
+            self.radarImage.alpha = 0.5
+        }, completion: nil)
+    }
+    func stopBlinkingRadar() {
+        self.radarImage.layer.removeAllAnimations()
+        self.radarImage.alpha = 1.0
+    }
+
     
     @objc
     func puzzleTapped() {
