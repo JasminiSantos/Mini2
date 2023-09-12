@@ -164,8 +164,7 @@ class ButtonPuzzleView: UIView {
 
         view.axis         = .horizontal
         view.spacing      = 25
-        view.distribution = .fill
-        view.alignment    = .center
+        view.distribution = .fillEqually
         view.translatesAutoresizingMaskIntoConstraints = false
         
         
@@ -187,13 +186,8 @@ class ButtonPuzzleView: UIView {
     
     private func addSubviews() {
         addSubview(backgroundImage)
-//        addSubview(buttonHStackView)
+        addSubview(buttonHStackView)
 //        addSubview(successImage)
-        addSubview(firstButton)
-        addSubview(secondButton)
-        addSubview(thirdButton)
-        addSubview(fourthButton)
-        addSubview(fifthButton)
         
         addSubview(exitButton)
         
@@ -202,41 +196,17 @@ class ButtonPuzzleView: UIView {
     }
     
     private func setupConstraints() {
-//        buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
-//        buttonHStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 200).setActive()
-//        buttonHStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -200).setActive()
-//        buttonHStackView.heightAnchor.constraint(equalToConstant: 35).setActive()
-//        buttonHStackView.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
+        buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
+        buttonHStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 195).setActive()
+        buttonHStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -225).setActive()
+        buttonHStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -24).setActive()
+        
+        firstButton.heightAnchor.constraint(equalTo: firstButton.widthAnchor, multiplier: 15/14).setActive()
         
         backgroundImage.leadingAnchor.constraint(equalTo: leadingAnchor).setActive()
         backgroundImage.trailingAnchor.constraint(equalTo: trailingAnchor).setActive()
         backgroundImage.topAnchor.constraint(equalTo: topAnchor).setActive()
         backgroundImage.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
-        
-        firstButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 196).setActive()
-        firstButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -41).setActive()
-        firstButton.widthAnchor.constraint(equalToConstant: 48.15).setActive()
-        firstButton.heightAnchor.constraint(equalToConstant: 45).setActive()
-
-        secondButton.leadingAnchor.constraint(equalTo: firstButton.trailingAnchor, constant: 43).setActive()
-        secondButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor).setActive()
-        secondButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
-        secondButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
-        
-        thirdButton.leadingAnchor.constraint(equalTo: secondButton.trailingAnchor, constant: 46).setActive()
-        thirdButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
-        thirdButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
-        thirdButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
-        
-        fourthButton.leadingAnchor.constraint(equalTo: thirdButton.trailingAnchor, constant: 47).setActive()
-        fourthButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
-        fourthButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
-        fourthButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
-        
-        fifthButton.leadingAnchor.constraint(equalTo: fourthButton.trailingAnchor, constant: 51).setActive()
-        fifthButton.bottomAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 3).setActive()
-        fifthButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor).setActive()
-        fifthButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor).setActive()
         
         consoleImage.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
         consoleImage.centerYAnchor.constraint(equalTo: centerYAnchor).setActive()
