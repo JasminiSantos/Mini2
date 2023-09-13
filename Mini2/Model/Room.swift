@@ -14,10 +14,11 @@ class Room {
     var visited: Bool
     var blocked: Bool
     var puzzle: Puzzles = .none
-    var item: Bool
+    var items: [Item] = [.none]
     var level: Int
     
     var puzzleImageName: String = ""
+    var itemImageName: [String] = []
 
     init(x: Int, y: Int, level: Int = 1) {
         self.x = x
@@ -27,10 +28,10 @@ class Room {
         self.visited = false
         self.blocked = false
         self.puzzle = .none
-        self.item = false
+        self.items = [.none]
     }
     
-    init(x: Int, y: Int, level: Int = 1, puzzle: Puzzles) {
+    init(x: Int, y: Int, level: Int = 1, puzzle: Puzzles, items: [Item]) {
         self.x = x
         self.y = y
         self.level = level
@@ -38,7 +39,7 @@ class Room {
         self.monster = false
         self.visited = false
         self.blocked = false
-        self.item = false
+        self.items = items
     }
 
     func hasMonstro() -> Bool {
@@ -53,8 +54,8 @@ class Room {
         self.puzzle = puzzle
     }
 
-    func setItem(_ item: Bool) {
-        self.item = item
+    func setItem(_ item: Item) {
+        self.items.append(item)
     }
     
     func setContaminationLevel(_ level: Int) {

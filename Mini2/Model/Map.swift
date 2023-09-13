@@ -51,7 +51,18 @@ class Map {
             for y in 0..<columns {
                 let room = Room(x: x, y: y)
 //                print("x = \(x) y = \(y)")
-                if x == 0 && y == 1{
+                if x == 0 && y == 0 {
+                    room.items = []
+                    room.setItem(.bluePrint)
+                    room.setItem(.radar)
+                    room.puzzleImageName = Puzzles.none.puzzleImageName
+                }
+                else if x == 0 && y == 2 {
+                    room.items = []
+                    room.setItem(.document)
+                    room.puzzleImageName = Puzzles.none.puzzleImageName
+                }
+                else if x == 0 && y == 1{
                     room.setPuzzle(.pipes)
                     room.puzzleImageName = Puzzles.pipes.puzzleImageName
                 }
@@ -65,6 +76,7 @@ class Map {
                 }
                 else {
                     room.puzzleImageName = Puzzles.none.puzzleImageName
+                    room.itemImageName.append(Item.none.itemImageName)
                 }
                 if x == 0 && (y == 0 || y == 1) {
                     room.setContaminationLevel(1)

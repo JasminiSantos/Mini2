@@ -53,4 +53,7 @@ public class GameManager {
     func markGameAsFinished() {
         isGameOver.value = true
     }
+    func markRadarCompleted() {
+        isRadarEquipped = true
+    }
 }

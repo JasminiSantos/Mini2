@@ -11,6 +11,7 @@
 		841743DB2AA79DA4002D4731 /* FadeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */; };
 		841743DF2AA8F13B002D4731 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743DE2AA8F13B002D4731 /* GameManager.swift */; };
 		841743E12AA8F1BE002D4731 /* Puzzles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743E02AA8F1BE002D4731 /* Puzzles.swift */; };
+		841743E52AB0E247002D4731 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841743E42AB0E247002D4731 /* Item.swift */; };
 		843DA3D92A97EE5E002A0CD0 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3D82A97EE5E002A0CD0 /* Map.swift */; };
 		843DA3DB2A97EE66002A0CD0 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3DA2A97EE66002A0CD0 /* Room.swift */; };
 		843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843DA3E42A991F29002A0CD0 /* Direction.swift */; };
@@ -44,6 +45,7 @@
 		841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeNavigationController.swift; sourceTree = "<group>"; };
 		841743DE2AA8F13B002D4731 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		841743E02AA8F1BE002D4731 /* Puzzles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puzzles.swift; sourceTree = "<group>"; };
+		841743E42AB0E247002D4731 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		843DA3D82A97EE5E002A0CD0 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		843DA3DA2A97EE66002A0CD0 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		843DA3E42A991F29002A0CD0 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				843DAA4C2A9D1DF6002A0CD0 /* ContaminationConfig.swift */,
 				843DAA542AA11C24002A0CD0 /* Radar.swift */,
 				841743E02AA8F1BE002D4731 /* Puzzles.swift */,
+				841743E42AB0E247002D4731 /* Item.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				841743DF2AA8F13B002D4731 /* GameManager.swift in Sources */,
 				B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */,
 				B3F9A4EE2A991C5D00B7E7F1 /* ButtonPuzzleView.swift in Sources */,
+				841743E52AB0E247002D4731 /* Item.swift in Sources */,
 				84C01A252A97E8C60070D2E5 /* ViewController.swift in Sources */,
 				B3F9A4F22A9BB40800B7E7F1 /* LightPuzzleView.swift in Sources */,
 				B3F9A4FF2A9E1D5900B7E7F1 /* SKLightBeam.swift in Sources */,
