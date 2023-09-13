@@ -26,7 +26,7 @@ enum Puzzles {
         }
     }
     private func getRandomBackgroundImageName() -> String {
-        let backgroundImages = ["asset_cadeira", "asset_mesacompiuter", "asset_mesacompiuter", "asset_tubulacao"]
+        let backgroundImages = ["asset_cadeira", "asset_mesacompiuter", "asset_tubulacao"]
         return backgroundImages.randomElement() ?? "asset_tubulacao"
     }
     var puzzleUIImage: UIImage? {
