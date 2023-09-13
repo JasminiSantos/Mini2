@@ -57,6 +57,13 @@ class Map {
                     room.setItem(.radar)
                     room.puzzleImageName = Puzzles.none.puzzleImageName
                 }
+                else if x == 2 && y == 1 {
+                    room.items = []
+                    room.setItem(.frame)
+                    room.setItem(.specialDoor)
+                    room.setItem(.plant)
+                    room.setItem(.chair)
+                }
                 else if x == 0 && y == 2 {
                     room.items = []
                     room.setItem(.document)

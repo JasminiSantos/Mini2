@@ -11,6 +11,10 @@ enum Item {
     case bluePrint
     case document
     case radar
+    case frame
+    case specialDoor
+    case plant
+    case chair
     case none
     
     var itemImageName: String {
@@ -21,6 +25,14 @@ enum Item {
                 return "Asset_DocumentoNoChao"
             case .radar:
                 return "Asset_radarNoChão"
+            case .frame:
+                return "Asset_quadroNoLugar"
+            case .specialDoor:
+                return "Asset_portaFinal"
+            case .plant:
+                return "Asset_plantinhaNaMesa"
+            case .chair:
+                return "asset_cadeira"
             case .none:
                 return ""
         }
@@ -34,6 +46,14 @@ enum Item {
                 items = ["Asset_Doc1_Aberto", "Asset_Doc2_Aberto"]
             case .radar:
                 items = ["Asset_radarNoChão"]
+            case .frame:
+                items = ["Asset_quadroNoLugar", "Asset_PainelOculto_Desligado", "Asset_PainelOculto_Ligado"]
+            case .specialDoor:
+                return ["Asset_portaFinal"]
+            case .plant:
+                return ["Asset_plantinhaNaMesa"]
+            case .chair:
+                return ["asset_cadeira"]
             case .none:
                 return []
         }
