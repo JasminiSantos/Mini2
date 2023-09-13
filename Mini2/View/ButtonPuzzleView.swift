@@ -15,6 +15,8 @@ class ButtonPuzzleView: UIView {
     var pressedButtons: Set<Int> = []
     var isComplete: CurrentValueSubject<Bool, Never>?
     var isAvailable = false
+    let heavyImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+    let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
     
     init(frame: CGRect, isAvailable: Bool) {
         self.isAvailable = isAvailable
@@ -31,43 +33,53 @@ class ButtonPuzzleView: UIView {
     }
     
     @objc
+    func handleButtonTouchDown() {
+        lightImpactFeedbackGenerator.impactOccurred(intensity: 1)
+    }
+    
+    @objc
     func handleFirstButtonTap() {
+        heavyImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+        consoleMatrix.moveBallDown()
         sequencePublisher.send(1)
         pressedButtons.insert(1)
         updateButtonStates()
-        consoleMatrix.moveBallDown()
     }
     
     @objc
     func handleSecondButtonTap() {
+        heavyImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+        consoleMatrix.moveBallUpLeft()
         sequencePublisher.send(2)
         pressedButtons.insert(2)
         updateButtonStates()
-        consoleMatrix.moveBallUpLeft()
     }
     
     @objc
     func handleThirdButtonTap() {
+        heavyImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+        consoleMatrix.moveBallUpRight()
         sequencePublisher.send(3)
         pressedButtons.insert(3)
         updateButtonStates()
-        consoleMatrix.moveBallUpRight()
     }
     
     @objc
     func handleFourthButtonTap() {
+        heavyImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+        consoleMatrix.moveBallRightDown()
         sequencePublisher.send(4)
         pressedButtons.insert(4)
         updateButtonStates()
-        consoleMatrix.moveBallRightDown()
     }
     
     @objc
     func handleFifthButtonTap() {
+        heavyImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+        consoleMatrix.moveBallRightUp()
         sequencePublisher.send(5)
         pressedButtons.insert(5)
         updateButtonStates()
-        consoleMatrix.moveBallRightUp()
     }
     
     @objc
@@ -110,6 +122,7 @@ class ButtonPuzzleView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setBackgroundImage(UIImage(named: "button-puzzle1"), for: .normal)
         view.addTarget(self, action: #selector(handleFirstButtonTap), for: .touchUpInside)
+        view.addTarget(self, action: #selector(handleButtonTouchDown), for: .touchDown)
         view.isUserInteractionEnabled = !pressedButtons.contains(1)
 
         return view
@@ -120,6 +133,7 @@ class ButtonPuzzleView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setBackgroundImage(UIImage(named: "button-puzzle2"), for: .normal)
         view.addTarget(self, action: #selector(handleSecondButtonTap), for: .touchUpInside)
+        view.addTarget(self, action: #selector(handleButtonTouchDown), for: .touchDown)
         view.isUserInteractionEnabled = !pressedButtons.contains(2)
 
         return view
@@ -130,6 +144,7 @@ class ButtonPuzzleView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setBackgroundImage(UIImage(named: "button-puzzle3"), for: .normal)
         view.addTarget(self, action: #selector(handleThirdButtonTap), for: .touchUpInside)
+        view.addTarget(self, action: #selector(handleButtonTouchDown), for: .touchDown)
         view.isUserInteractionEnabled = !pressedButtons.contains(3)
 
         return view
@@ -140,6 +155,7 @@ class ButtonPuzzleView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setBackgroundImage(UIImage(named: "button-puzzle4"), for: .normal)
         view.addTarget(self, action: #selector(handleFourthButtonTap), for: .touchUpInside)
+        view.addTarget(self, action: #selector(handleButtonTouchDown), for: .touchDown)
         view.isUserInteractionEnabled = !pressedButtons.contains(4)
         
         return view
@@ -150,6 +166,7 @@ class ButtonPuzzleView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setBackgroundImage(UIImage(named: "button-puzzle5"), for: .normal)
         view.addTarget(self, action: #selector(handleFifthButtonTap), for: .touchUpInside)
+        view.addTarget(self, action: #selector(handleButtonTouchDown), for: .touchDown)
         view.isUserInteractionEnabled = !pressedButtons.contains(5)
         
         return view
@@ -196,7 +213,6 @@ class ButtonPuzzleView: UIView {
     }
     
     private func setupConstraints() {
-        buttonHStackView.centerXAnchor.constraint(equalTo: centerXAnchor).setActive()
         buttonHStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 195).setActive()
         buttonHStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -225).setActive()
         buttonHStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -24).setActive()
@@ -233,10 +249,21 @@ class ButtonPuzzleView: UIView {
     }
     
     private func updateButtonStates() {
-        firstButton.isUserInteractionEnabled = !pressedButtons.contains(1) && isAvailable
-        secondButton.isUserInteractionEnabled = !pressedButtons.contains(2) && isAvailable
-        thirdButton.isUserInteractionEnabled = !pressedButtons.contains(3) && isAvailable
-        fourthButton.isUserInteractionEnabled = !pressedButtons.contains(4) && isAvailable
-        fifthButton.isUserInteractionEnabled = !pressedButtons.contains(5) && isAvailable
+        let buttonConditions = [
+            (!pressedButtons.contains(1) && !GameManager.shared.isPuzzleButtonsCompleted.value),
+            (!pressedButtons.contains(2) && !GameManager.shared.isPuzzleButtonsCompleted.value),
+            (!pressedButtons.contains(3) && !GameManager.shared.isPuzzleButtonsCompleted.value),
+            (!pressedButtons.contains(4) && !GameManager.shared.isPuzzleButtonsCompleted.value),
+            (!pressedButtons.contains(5) && !GameManager.shared.isPuzzleButtonsCompleted.value)
+        ]
+        
+        let buttons = [firstButton, secondButton, thirdButton, fourthButton, fifthButton]
+        
+        for (index, button) in buttons.enumerated() {
+            let condition = buttonConditions[index]
+            button.isUserInteractionEnabled = condition
+            let buttonImageName = condition ? "button-puzzle\(index + 1)" : "graybutton-puzzle\(index + 1)"
+            button.setImage(UIImage(named: buttonImageName), for: .normal)
+        }
     }
 }

@@ -24,7 +24,7 @@ class SKMirror: SKSpriteNode {
     }
     
     func addTouchArea() {
-        let radius = max(self.size.width, self.size.height) / 2
+        let radius = max(self.size.width, self.size.height) / 2 + 10
         
         touchArea = SKShapeNode(circleOfRadius: radius)
         touchArea.strokeColor = .clear

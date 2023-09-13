@@ -19,6 +19,9 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     var rotatingMirror:     SKMirror?
     var panGestureRecognizer: UIPanGestureRecognizer!
     
+    private let softImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .soft)
+    private let heavyImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+    
     var lastMirrorRotation: CGFloat?
     
     var completionPoint: CompletionPoint!
@@ -38,7 +41,7 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         init(position: CGPoint, size: CGSize) {
             self.startPoint = position
             self.endPoint = CGPoint(x: position.x + size.width, y: position.y + size.height)
-            super.init(texture: nil, color: .green, size: size)
+            super.init(texture: nil, color: .clear, size: size)
             self.position = position
         }
         
@@ -50,6 +53,9 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = .zero
+        
+        softImpactFeedbackGenerator.prepare()
+        heavyImpactFeedbackGenerator.prepare()
         
         addBackground()
         addLightBeam()
@@ -116,7 +122,7 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     }
     
     func addCompletionPoint() {
-        completionPoint = CompletionPoint(position: CGPoint(x: frame.maxX * 0.86, y: frame.maxY * 0.765), size: CGSize(width: 5, height: 35))
+        completionPoint = CompletionPoint(position: CGPoint(x: frame.maxX * 0.86, y: frame.maxY * 0.72), size: CGSize(width: 5, height: 26))
         addChild(completionPoint)
     }
     
@@ -126,6 +132,21 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     }
     
     @objc func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let touchLocation = gestureRecognizer.location(in: self.view)
+        let touchPoint    = convertPoint(fromView: touchLocation)
+        let touchedNodes  = nodes(at: touchPoint)
+
+        for node in touchedNodes {
+            if let rotatingMirror = node as? SKMirror {
+                let dx = touchPoint.x - rotatingMirror.position.x
+                let dy = touchPoint.y - rotatingMirror.position.y
+
+                let angle = atan2(dy, dx)
+                rotatingMirror.zRotation = angle - .pi / 2
+                softImpactFeedbackGenerator.impactOccurred(intensity: 0.5)
+            }
+        }
+        
         lights.forEach { light in
             if light != lightBeam {
                 light.removeFromParent()
@@ -167,20 +188,6 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
             resetPath(lightBeam: lightBeam)
         }
         
-        let touchLocation = gestureRecognizer.location(in: self.view)
-        let touchPoint    = convertPoint(fromView: touchLocation)
-        let touchedNodes  = nodes(at: touchPoint)
-
-        for node in touchedNodes {
-            if let rotatingMirror = node as? SKMirror {
-                let dx = touchPoint.x - rotatingMirror.position.x
-                let dy = touchPoint.y - rotatingMirror.position.y
-
-                let angle = atan2(dy, dx)
-                rotatingMirror.zRotation = angle - .pi / 2
-            }
-        }
-        
         for light in lights {
             let cp = handleCompletionPointAndLightContact(completionPoint: completionPoint, lightBeam: light)
             if cp != nil {
@@ -190,6 +197,8 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
                 puzzleCompleted = true
                 GameManager.shared.markPuzzleLightAsCompleted()
                 
+                performCompletionHaptics()
+                
                 break
             }
         }
@@ -198,6 +207,26 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
             for light in lights {
                 light.strokeColor = .green
             }
+        }
+    }
+    
+    func performCompletionHaptics() {
+        // Primeiro impacto
+        heavyImpactFeedbackGenerator.impactOccurred()
+        
+        // Pausa curta e segundo impacto
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.heavyImpactFeedbackGenerator.impactOccurred()
+        }
+        
+        // Pausa curta e segundo impacto
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.heavyImpactFeedbackGenerator.impactOccurred()
+        }
+        
+        // Pausa longa e terceiro impacto
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.heavyImpactFeedbackGenerator.impactOccurred()
         }
     }
     

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     public var gameManager: GameManager!
@@ -13,6 +14,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     var backgroundImageView: UIImageView!
     var radarImage: UIImageView!
 
+    private let rigidImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
+    private let heavyImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+    
     var radar: Radar!
     var map = Map(rows: 3, columns: 3, contaminationConfig: [
         ContaminationConfig(level: 1, count: 2),
@@ -26,7 +30,11 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     var rightDoor: UIButton!
     var leftDoor: UIButton!
     var puzzleButton: UIButton!
+    var pickFlowerButton: UIButton!
     let completedPuzzles: Set<Puzzles> = []
+    var pulseTimer: Timer?
+    
+    var cancellables = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,10 +48,18 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         
         navigationItem.hidesBackButton = true
         
-        if let contaminationLevel = radar.getMaxNearbyLevel() {
-            HapticsController.shared.startRadarPulse(for: contaminationLevel)
-        }
+        setupSubscriptions()
+        
         updateRadarButtons()
+        
+        rigidImpactFeedbackGenerator.prepare()
+        heavyImpactFeedbackGenerator.prepare()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+//        if let contaminationLevel = radar.getMaxNearbyLevel() {
+//            HapticsController.shared.startRadarPulse(for: contaminationLevel)
+//        }
     }
     
     func createButton(frame: CGRect, title: String, action: Selector) -> UIButton {
@@ -69,6 +85,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         rightDoor = createButton(frame: CGRect(x: centerX*1.5 + padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "rightDoor", action: #selector(leftButtonTapped))
         
         puzzleButton = createButton(frame: CGRect(x: centerX/2 - padding, y: centerY/2, width: buttonSize*1.5, height: buttonSize*2), title: "downDoor", action: #selector(puzzleTapped))
+        
+        pickFlowerButton = createButton(frame: CGRect(x: centerX + 5 * padding, y: centerY/2 - padding, width: buttonSize*1.5, height: buttonSize*2), title: "flowerPod", action: #selector(flowerTapped))
+        
 //        puzzleButton.backgroundColor = .blue
         
         updateButtonVisibility()
@@ -80,14 +99,14 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         rightDoor.isHidden = !map.canMove(direction: .left)
         leftDoor.isHidden = !map.canMove(direction: .right)
         puzzleButton.isHidden = map.currentRoom?.puzzle == Puzzles.none || map.currentRoom == nil
+        pickFlowerButton.isHidden = !GameManager.shared.isPuzzlePipesCompleted.value || GameManager.shared.hasPickedFlower.value
         updateBackgroundBasedOnVisibleButtons()
     }
     
-    func removeBackground(){
+    func removeBackground() {
         radarImage = UIImageView()
         backgroundImageView?.removeFromSuperview()
     }
-    
     
     func updateBackgroundBasedOnVisibleButtons() {
         removeBackground()
@@ -152,8 +171,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     func setBackgroundImage(named imageName: String){
         backgroundImageView = addBackgroundImage(named: imageName)
         
-        let secondaryBackgroundImageView = addBackgroundImage(named: map.currentRoom?.puzzleImageName ?? "")
-        backgroundImageView.addSubview(secondaryBackgroundImageView)
+        if let puzzle = map.currentRoom?.puzzleImageName, !puzzle.isEmpty {
+            backgroundImageView.addSubview(addBackgroundImage(named: puzzle))
+        }
         
         backgroundImageView.addSubview(addBackgroundImage(named: "asset_radar"))
         if let door = downDoor, !door.isHidden {
@@ -165,7 +185,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         self.view.sendSubviewToBack(backgroundImageView)
     }
     
-    func addBackgroundImage(named imageName: String)-> UIImageView{
+    func addBackgroundImage(named imageName: String) -> UIImageView{
         var imageBackground: UIImageView!
         imageBackground = UIImageView(frame: self.view.bounds)
         imageBackground.image = UIImage(named: imageName)
@@ -175,20 +195,17 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
     
     func goToAnotherRoomAnimation(){
-        HapticsController.shared.stopRadarPulse()
-        
-        if let contaminationLevel = radar.getMaxNearbyLevel() {
-            HapticsController.shared.startRadarPulse(for: contaminationLevel)
-        }
-        
         UIView.animate(withDuration: 0.5, animations: {
             self.view.alpha = 0
         }) { _ in
             UIView.animate(withDuration: 0.5) {
-                self.updateButtonVisibility()
-                self.updateRadarButtons()
                 self.view.alpha = 1
             }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.updateButtonVisibility()
+            self.updateRadarButtons()
         }
     }
     
@@ -205,7 +222,12 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
                 pipePuzzleVC.delegate = self
                 nextViewController = pipePuzzleVC
             case .buttons:
-                let buttonPuzzleVC = ButtonPuzzleViewController(isAvailable: GameManager.shared.isPuzzlePipesCompleted)
+                if GameManager.shared.shouldAddFlowerToComputer.value && !GameManager.shared.hasAddedFlowerToComputer.value {
+                    GameManager.shared.markFlowerAsAdded()
+                    return
+                }
+                
+                let buttonPuzzleVC = ButtonPuzzleViewController(isAvailable: GameManager.shared.isPuzzlePipesCompleted.value)
                 buttonPuzzleVC.delegate = self
                 nextViewController = buttonPuzzleVC
             case .none:
@@ -213,15 +235,17 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             }
             
             if let navController = self.navigationController as? FadeNavigationController {
+                pulseTimer?.invalidate()
                 navController.pushViewController(nextViewController, animated: true)
             }
         }
     }
-
-
+    
+    func pickFlower() {
+        GameManager.shared.markFlowerAsPicked()
+    }
     
     func setRadarImages(_ quadrant: RadarQuadrant, contaminationLevel: Int) {
-        
         let commonImages = ["asset_interfaceSecundaria_vazia_1", "asset_interfaceSecundaria_vazia_2", "asset_interfaceSecundaria_vazia_3"]
         commonImages.forEach { backgroundImageView.addSubview(addBackgroundImage(named: $0)) }
         
@@ -252,7 +276,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         }
     }
     
-    
     func displayContaminationLevels(_ levels: [Int?], for quadrant: RadarQuadrant) {
         if let highestContamination = levels.compactMap({ $0 }).max() {
             setRadarImages(quadrant, contaminationLevel: highestContamination)
@@ -262,45 +285,66 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
     
     func updateRadarButtons() {
-        
-        displayContaminationLevels(radar.topLeftQuadrantContamination(), for: .topLeft)
-        displayContaminationLevels(radar.topRightQuadrantContamination(), for: .topRight)
-        displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: .bottomLeft)
-        displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: .bottomRight)
-        
-        backgroundImageView.addSubview(radarImage)
-        
         if let contaminationLevel = radar.getMaxNearbyLevel() {
+            if contaminationLevel == 5 {
+                displayContaminationLevels([Optional(4)], for: .topLeft)
+                displayContaminationLevels([Optional(4)], for: .topRight)
+                displayContaminationLevels([Optional(4)], for: .bottomLeft)
+                displayContaminationLevels([Optional(4)], for: .bottomRight)
+                
+            } else {
+                displayContaminationLevels(radar.topLeftQuadrantContamination(), for: .topLeft)
+                displayContaminationLevels(radar.topRightQuadrantContamination(), for: .topRight)
+                displayContaminationLevels(radar.bottomLeftQuadrantContamination(), for: .bottomLeft)
+                displayContaminationLevels(radar.bottomRightQuadrantContamination(), for: .bottomRight)
+            }
+            
+            backgroundImageView.addSubview(radarImage)
+            
+            stopBlinkingRadar()
             startBlinkingRadar(duration: getInterval(contaminationLevel: contaminationLevel))
         }
     }
     
-    func getInterval(contaminationLevel: Int) -> Double{
-        var interval: Double
-        if contaminationLevel == 5 {
-            interval = 0.25
+    func getInterval(contaminationLevel: Int) -> Double {
+        switch contaminationLevel {
+        case 5:
+            return 0.125
+        case 4:
+            return 0.25
+        case 3:
+            return 0.5
+        default:
+            return 1.5
         }
-        else if contaminationLevel < 4 {
-            interval = 2
-        } else {
-            interval = 0.8
-        }
-        return interval
     }
+    
     func startBlinkingRadar(duration: Double) {
+        HapticsController.shared.playPulse()
+        
+        pulseTimer = Timer.scheduledTimer(withTimeInterval: 2 * duration, repeats: true, block: { _ in
+            HapticsController.shared.playPulse()
+        })
+        
         UIView.animate(withDuration: duration, delay: 0.0, options: [.repeat, .autoreverse], animations: {
-            self.radarImage.alpha = 0.5
+            self.radarImage.alpha = 0.25
         }, completion: nil)
     }
+    
     func stopBlinkingRadar() {
         self.radarImage.layer.removeAllAnimations()
         self.radarImage.alpha = 1.0
+        pulseTimer?.invalidate()
     }
-
     
     @objc
     func puzzleTapped() {
         goToPuzzle()
+    }
+    
+    @objc
+    func flowerTapped() {
+        pickFlower()
     }
     
     func displayContaminationLevels(_ levels: [Int?]) {
@@ -312,5 +356,46 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     
     func puzzleViewControllerDidRequestExit(_ viewController: UIViewController) {
         navigationController?.popViewController(animated: true)
+        self.updateButtonVisibility()
+        self.updateRadarButtons()
+    }
+    
+    // MARK: Logic for game responsiveness
+    
+    func setupSubscriptions() {
+        GameManager.shared.isPuzzlePipesCompleted.sink { completed in
+            if completed {
+                self.map.currentRoom?.puzzleImageName = "asset_puzzletubos_aberto"
+            }
+        }.store(in: &cancellables)
+        
+        GameManager.shared.isGameOver.sink { completed in
+            if completed {
+                
+            }
+        }.store(in: &cancellables)
+        
+        GameManager.shared.hasPickedFlower.sink { completed in
+            if completed {
+                self.map.currentRoom?.puzzleImageName = "Asset_PzlTubulacao_PodVazio"
+                self.updateButtonVisibility()
+                self.updateRadarButtons()
+                GameManager.shared.shouldAddFlowerToComputer.value = true
+            }
+        }.store(in: &cancellables)
+        
+        GameManager.shared.hasAddedFlowerToComputer.sink { completed in
+            if completed {
+                self.map.currentRoom?.puzzleImageName = "Asset_pzlBotoes_comFlor"
+                self.updateButtonVisibility()
+                self.updateRadarButtons()
+            }
+        }.store(in: &cancellables)
+        
+        GameManager.shared.isPuzzleLightCompleted.sink { completed in
+            if completed {
+//                self.map.currentRoom?.puzzleImageName = "asset_puzzletubos_aberto"
+            }
+        }.store(in: &cancellables)
     }
 }

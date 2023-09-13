@@ -6,27 +6,51 @@
 //
 
 import UIKit
+import Combine
 
 public class GameManager {
     static let shared = GameManager()
     
-    var isPuzzleLightCompleted: Bool = false
-    var isPuzzlePipesCompleted: Bool = false
-    var isPuzzleButtonsCompleted: Bool = false
+    private(set) var isPuzzleLightCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var isPuzzlePipesCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var isPuzzleButtonsCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var hasPickedFlower: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    
+    private(set) var shouldAddFlowerToComputer: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var hasAddedFlowerToComputer: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    
+    private(set) var isGameOver: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     
     func areAllPuzzlesCompleted() -> Bool {
-        return isPuzzleLightCompleted && isPuzzlePipesCompleted && isPuzzleButtonsCompleted
+        return isPuzzleLightCompleted.value && isPuzzlePipesCompleted.value && isPuzzleButtonsCompleted.value
     }
     
     func markPuzzleLightAsCompleted() {
-        isPuzzleLightCompleted = true
+        isPuzzleLightCompleted.value = true
     }
     
     func markPuzzlePipesAsCompleted() {
-        isPuzzlePipesCompleted = true
+        isPuzzlePipesCompleted.value = true
     }
     
     func markPuzzleButtonsAsCompleted() {
-        isPuzzleButtonsCompleted = true
+        isPuzzleButtonsCompleted.value = true
+    }
+    
+    func markFlowerAsPicked() {
+        hasPickedFlower.value = true
+    }
+    
+    func markFlowerAsAddable() {
+        shouldAddFlowerToComputer.value = true
+    }
+    
+    func markFlowerAsAdded() {
+        shouldAddFlowerToComputer.value = false
+        hasAddedFlowerToComputer.value = true
+    }
+    
+    func markGameAsFinished() {
+        isGameOver.value = true
     }
 }

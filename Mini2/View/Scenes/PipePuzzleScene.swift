@@ -10,12 +10,16 @@ import SpriteKit
 class PipePuzzleScene: SKScene {
     
     let background = SKSpriteNode(imageNamed: "pipes-background")
+    private let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+    private let softImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .soft)
     
     var grid: [[SKSpriteNode?]] = []
     let rows = 6
     let cols = 6
     
     override func didMove(to view: SKView) {
+        lightImpactFeedbackGenerator.prepare()
+        softImpactFeedbackGenerator.prepare()
         addBackground()
         createGrid()
         shuffleGrid()   
@@ -122,7 +126,10 @@ class PipePuzzleScene: SKScene {
                 pipe.rotate()
             }
             
+            lightImpactFeedbackGenerator.impactOccurred()
+            
             if checkForCompletion(start: GridPosition(row: 0, col: 0)) {
+                simulateWaterFlow()
                 GameManager.shared.markPuzzlePipesAsCompleted()
                 self.isUserInteractionEnabled = false
             }
@@ -280,6 +287,24 @@ class PipePuzzleScene: SKScene {
             return LPipe(isRotatable: isRotatable, isStart: isStart, isEnd: isEnd)
         default:
             fatalError("Invalid randomIndex")
+        }
+    }
+    
+    func simulateWaterFlow() {
+        let steps = 40
+        let timeIntervalBetweenSteps = 0.05
+        
+        for step in 1...steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(step) * timeIntervalBetweenSteps) {
+                
+                let intensity = Double(step) / Double(steps)
+                
+                self.softImpactFeedbackGenerator.impactOccurred(intensity: CGFloat(intensity))
+                
+                if step == steps {
+                    self.softImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+                }
+            }
         }
     }
 }
