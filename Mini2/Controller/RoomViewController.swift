@@ -211,13 +211,12 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             updateRadarButtons()
         }
     }
-
     
     func setBackgroundImage(named imageName: String){
         backgroundImageView = addBackgroundImage(named: imageName)
 
         if let room = map.currentRoom, !room.hasMonstro() {
-            if let puzzle = map.currentRoom?.puzzle, let image = map.currentRoom?.puzzleImageName {
+            if let _ = map.currentRoom?.puzzle, let image = map.currentRoom?.puzzleImageName {
                 backgroundImageView.addSubview(addBackgroundImage(named: image))
             }
             
@@ -280,11 +279,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             UIView.animate(withDuration: 5) {
                 self.view.alpha = 0
             }
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.updateButtonVisibility()
-            self.updateRadarButtons()
         }
     }
 
@@ -365,9 +359,8 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
     
     func updateRadarButtons() {
-        backgroundImageView.addSubview(addBackgroundImage(named: "asset_radar"))
-        
         if let contaminationLevel = radar.getMaxNearbyLevel() {
+            backgroundImageView.addSubview(addBackgroundImage(named: "asset_radar"))
             if contaminationLevel == 5 {
                 displayContaminationLevels([Optional(4)], for: .topLeft)
                 displayContaminationLevels([Optional(4)], for: .topRight)
@@ -399,7 +392,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         default:
             return 1.5
         }
-
     }
     
     func startBlinkingRadar(duration: Double) {
@@ -477,7 +469,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         
         GameManager.shared.isPuzzleLightCompleted.sink { completed in
             if completed {
-//                self.map.currentRoom?.puzzleImageName = "asset_puzzletubos_aberto"
             }
         }.store(in: &cancellables)
     }

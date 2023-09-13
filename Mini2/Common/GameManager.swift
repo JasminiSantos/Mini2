@@ -11,6 +11,7 @@ import Combine
 public class GameManager {
     static let shared = GameManager()
     
+    var isRadarEquipped = false
     private(set) var isPuzzleLightCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzlePipesCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzleButtonsCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
