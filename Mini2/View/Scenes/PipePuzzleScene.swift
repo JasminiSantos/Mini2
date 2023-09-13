@@ -10,25 +10,81 @@ import SpriteKit
 class PipePuzzleScene: SKScene {
     
     let background = SKSpriteNode(imageNamed: "pipes-background")
+    let backgroundFrame = SKSpriteNode(imageNamed: "Asset_versaoFinal_PzlCanos")
+    let closedPanel = SKSpriteNode(imageNamed: "Asset_tampao_PzlTubos")
+    
     private let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-    private let softImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .soft)
+    private let rigidImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
     
     var grid: [[SKSpriteNode?]] = []
     let rows = 6
     let cols = 6
     
     override func didMove(to view: SKView) {
-        lightImpactFeedbackGenerator.prepare()
-        softImpactFeedbackGenerator.prepare()
-        addBackground()
-        createGrid()
-        shuffleGrid()   
+        if GameManager.shared.isPuzzlePipesCompleted.value {
+            addBackground()
+            addClosedPanel()
+        } else {
+            lightImpactFeedbackGenerator.prepare()
+            rigidImpactFeedbackGenerator.prepare()
+            addBackground()
+            createGrid()
+            shuffleGrid()
+            addBackgroundFrame()
+        }
     }
     
     private func addBackground() {
         background.size = frame.size
         background.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(background)
+    }
+    
+    private func addBackgroundFrame() {
+        backgroundFrame.size = frame.size
+        backgroundFrame.position = CGPoint(x: frame.midX, y: frame.midY)
+        backgroundFrame.zPosition = 26
+        addChild(backgroundFrame)
+    }
+    
+    private func addClosedPanel() {
+        closedPanel.size = frame.size
+        closedPanel.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(closedPanel)
+    }
+    
+    func addClosedPanelAnimated() {
+        for i in 0..<rows {
+            for j in 0..<cols {
+                grid[i][j]?.zPosition = 10
+            }
+        }
+        
+        let initialPosition = CGPoint(x: -closedPanel.size.width / 2, y: frame.midY)
+        let finalPosition = CGPoint(x: frame.midX, y: frame.midY)
+        
+        closedPanel.size = frame.size
+        closedPanel.position = initialPosition
+        closedPanel.zPosition = 25
+        
+        // Adicione o painel à cena
+        addChild(closedPanel)
+        
+        // Calcula o número total de 'passos' que o painel tomará para se mover até sua posição final.
+        let totalSteps = 50
+        let dx = (finalPosition.x - initialPosition.x) / CGFloat(totalSteps)
+        let dy = (finalPosition.y - initialPosition.y) / CGFloat(totalSteps)
+        
+        // Move o painel um pequeno incremento em cada iteração do loop
+        var actions: [SKAction] = []
+        for _ in 0..<totalSteps {
+            let moveAction = SKAction.moveBy(x: dx, y: dy, duration: 0.05)
+            actions.append(moveAction)
+        }
+        
+        let sequence = SKAction.sequence(actions)
+        
+        closedPanel.run(sequence)
     }
     
     func createGrid() {
@@ -53,6 +109,7 @@ class PipePuzzleScene: SKScene {
                         y: yOffset + CGFloat(row * 55)
                     )
                     tempRow.append(startPipe)
+                    startPipe.zPosition = 30
                     self.addChild(startPipe)
                     continue
                 }
@@ -64,6 +121,7 @@ class PipePuzzleScene: SKScene {
                         y: yOffset + CGFloat(row * 55)
                     )
                     tempRow.append(endPipe)
+                    endPipe.zPosition = 30
                     self.addChild(endPipe)
                     continue
                 }
@@ -83,6 +141,7 @@ class PipePuzzleScene: SKScene {
                     if let pipe = pipe {
                         pipe.position = CGPoint(x: xOffset + CGFloat(col * 55), y: yOffset + CGFloat(row * 55))
                         tempRow.append(pipe)
+                        pipe.zPosition = 30
                         self.addChild(pipe)
                     }
                 } else {
@@ -90,6 +149,7 @@ class PipePuzzleScene: SKScene {
                     let pipe = createRandomPipe(isRotatable: true, isStart: false, isEnd: false) as! SKSpriteNode
                     pipe.position = CGPoint(x: xOffset + CGFloat(col * 55), y: yOffset + CGFloat(row * 55))
                     tempRow.append(pipe)
+                    pipe.zPosition = 30
                     self.addChild(pipe)
                 }
             }
@@ -115,23 +175,26 @@ class PipePuzzleScene: SKScene {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches {
-            let location = t.location(in: self)
-            let touchedNode = self.atPoint(location)
-            
-            if let pipe = touchedNode as? StraightPipe {
-                pipe.rotate()
+        if !GameManager.shared.isPuzzlePipesCompleted.value {
+            for t in touches {
+                let location = t.location(in: self)
+                let touchedNode = self.atPoint(location)
                 
-            } else if let pipe = touchedNode as? LPipe {
-                pipe.rotate()
-            }
-            
-            lightImpactFeedbackGenerator.impactOccurred()
-            
-            if checkForCompletion(start: GridPosition(row: 0, col: 0)) {
-                simulateWaterFlow()
-                GameManager.shared.markPuzzlePipesAsCompleted()
-                self.isUserInteractionEnabled = false
+                if let pipe = touchedNode as? StraightPipe {
+                    pipe.rotate()
+                    
+                } else if let pipe = touchedNode as? LPipe {
+                    pipe.rotate()
+                }
+                
+                lightImpactFeedbackGenerator.impactOccurred()
+                
+                if checkForCompletion(start: GridPosition(row: 0, col: 0)) {
+                    simulateWaterFlow()
+                    GameManager.shared.markPuzzlePipesAsCompleted()
+                    self.isUserInteractionEnabled = false
+                    addClosedPanelAnimated()
+                }
             }
         }
     }
@@ -291,7 +354,7 @@ class PipePuzzleScene: SKScene {
     }
     
     func simulateWaterFlow() {
-        let steps = 40
+        let steps = 51
         let timeIntervalBetweenSteps = 0.05
         
         for step in 1...steps {
@@ -299,10 +362,10 @@ class PipePuzzleScene: SKScene {
                 
                 let intensity = Double(step) / Double(steps)
                 
-                self.softImpactFeedbackGenerator.impactOccurred(intensity: CGFloat(intensity))
+                self.rigidImpactFeedbackGenerator.impactOccurred(intensity: CGFloat(intensity))
                 
                 if step == steps {
-                    self.softImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+                    self.rigidImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
                 }
             }
         }

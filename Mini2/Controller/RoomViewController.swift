@@ -63,11 +63,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         heavyImpactFeedbackGenerator.prepare()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-//        if let contaminationLevel = radar.getMaxNearbyLevel() {
-//            HapticsController.shared.startRadarPulse(for: contaminationLevel)
-//        }
-    }
+
     func createButton(frame: CGRect, title: String, action: Selector) -> UIButton {
         let button = UIButton(frame: frame)
         button.addTarget(self, action: action, for: .touchUpInside)
@@ -84,7 +80,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         
         upDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY - buttonSize/2 - padding, width: buttonSize, height: buttonSize), title: "upDoor", action: #selector(downButtonTapped))
         
-        downDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.75, width: buttonSize, height: buttonSize/2), title: "downDoor", action: #selector(upButtonTapped))
+        downDoor = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.65, width: buttonSize, height: buttonSize/1.5), title: "downDoor", action: #selector(upButtonTapped))
         
         leftDoor = createButton(frame: CGRect(x: centerX/4 - padding, y: (centerY - buttonSize/2) + padding, width: buttonSize, height: buttonSize*2), title: "leftDoor", action: #selector(rightButtonTapped))
         
@@ -94,10 +90,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         
         pickFlowerButton = createButton(frame: CGRect(x: centerX + 5 * padding, y: centerY/2 - padding, width: buttonSize*1.5, height: buttonSize*2), title: "flowerPod", action: #selector(flowerTapped))
 
-        itemButton = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.35, width: buttonSize, height: buttonSize), title: "itemButton", action: #selector(inspectItem))
+        itemButton = createButton(frame: CGRect(x: centerX - buttonSize/2, y: centerY*1.25, width: buttonSize, height: buttonSize), title: "downDoor", action: #selector(inspectItem))
         
         frameButton = createButton(frame: CGRect(x: centerX + buttonSize + padding, y: centerY - buttonSize - padding, width: buttonSize, height: buttonSize), title: "frameButton", action: #selector(inspectItem))
-//        frameButton.backgroundColor = .blue
         
         updateButtonVisibility()
     }
@@ -195,6 +190,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(turnPage))
         inspectionImageView?.addGestureRecognizer(tapGesture)
     }
+    
     @objc func turnPage() {
         currentPage += 1
 
@@ -204,6 +200,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             inspectionImageView?.image = itemImages[currentPage]
         }
     }
+    
     func endInspection() {
         isInspecting = false
         currentPage = 0
@@ -266,13 +263,14 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
                     self.setMonsterScene()
                 }
                 else {
-                    self.updateButtonVisibility()
-                    if GameManager.shared.isRadarEquipped {
-                        self.updateRadarButtons()
-                    }
                     self.view.alpha = 1
                 }
-                
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.updateButtonVisibility()
+            if GameManager.shared.isRadarEquipped {
+                self.updateRadarButtons()
             }
         }
     }
@@ -313,7 +311,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
                     return
                 }
                 
-                let buttonPuzzleVC = ButtonPuzzleViewController(isAvailable: GameManager.shared.isPuzzlePipesCompleted.value)
+                let buttonPuzzleVC = ButtonPuzzleViewController(isAvailable: GameManager.shared.hasAddedFlowerToComputer.value)
                 buttonPuzzleVC.delegate = self
                 nextViewController = buttonPuzzleVC
             case .none:
@@ -468,9 +466,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     func puzzleViewControllerDidRequestExit(_ viewController: UIViewController) {
         navigationController?.popViewController(animated: true)
         self.updateButtonVisibility()
-        if GameManager.shared.isRadarEquipped {
-            self.updateRadarButtons()
-        }
+        if GameManager.shared.isRadarEquipped { self.updateRadarButtons() }
     }
     
     // MARK: Logic for game responsiveness

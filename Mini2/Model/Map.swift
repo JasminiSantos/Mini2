@@ -137,11 +137,11 @@ class Map {
             case 1:
                 return 0.0
             case 2:
-                return 0.1
+                return 0.01
             case 3:
-                return 0.2
+                return 0.05
             case 4:
-                return 0.3
+                return 0.15
             default:
                 return 0.0
         }

@@ -72,6 +72,7 @@ class ButtonPuzzleViewController: UIViewController {
         if correctPosition == currentPos {
             GameManager.shared.markPuzzleButtonsAsCompleted()
             performCompletionHaptics()
+            buttonPuzzleView?.updateConsoleImage()
             
         } else {
             if currentSequence.count == 5 {

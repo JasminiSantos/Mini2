@@ -65,6 +65,7 @@ class PipePuzzleView: UIView {
         
         puzzleScene.backgroundColor = .black
         puzzleScene.scaleMode       = .aspectFill
-        skView.presentScene(puzzleScene)
+        
+        self.skView.presentScene(puzzleScene)
     }
 }

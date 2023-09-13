@@ -26,6 +26,8 @@
 		84C01A2D2A97E8C70070D2E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84C01A2B2A97E8C70070D2E5 /* LaunchScreen.storyboard */; };
 		B379F1C32AA7A3FB00694EB1 /* HapticsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B379F1C22AA7A3FB00694EB1 /* HapticsController.swift */; };
 		B379F1C52AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */; };
+		B3843DEF2AB2404B00521331 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3843DEE2AB2404B00521331 /* StartView.swift */; };
+		B3843DF12AB2449B00521331 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3843DF02AB2449B00521331 /* StartViewController.swift */; };
 		B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */; };
 		B3F9A4EE2A991C5D00B7E7F1 /* ButtonPuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */; };
 		B3F9A4F02A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */; };
@@ -62,6 +64,8 @@
 		84C01A2E2A97E8C70070D2E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B379F1C22AA7A3FB00694EB1 /* HapticsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsController.swift; sourceTree = "<group>"; };
 		B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleMatrixView.swift; sourceTree = "<group>"; };
+		B3843DEE2AB2404B00521331 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
+		B3843DF02AB2449B00521331 /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		B3F9A4EB2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleViewController.swift; sourceTree = "<group>"; };
 		B3F9A4ED2A991C5D00B7E7F1 /* ButtonPuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPuzzleView.swift; sourceTree = "<group>"; };
 		B3F9A4EF2A991E2D00B7E7F1 /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 				B3F9A5042AA2593200B7E7F1 /* PipePuzzleView.swift */,
 				843DAA522A9E666B002A0CD0 /* Doors.swift */,
 				B379F1C42AA7B3AC00694EB1 /* ButtonPuzzleMatrixView.swift */,
+				B3843DEE2AB2404B00521331 /* StartView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 				B3F9A5062AA2598300B7E7F1 /* PipePuzzleViewController.swift */,
 				843DAA4E2A9D2953002A0CD0 /* RoomViewController.swift */,
 				841743DA2AA79DA4002D4731 /* FadeNavigationController.swift */,
+				B3843DF02AB2449B00521331 /* StartViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -260,6 +266,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3843DF12AB2449B00521331 /* StartViewController.swift in Sources */,
 				B3F9A4FD2A9BD56500B7E7F1 /* SKMirror.swift in Sources */,
 				841743DF2AA8F13B002D4731 /* GameManager.swift in Sources */,
 				B3F9A4EC2A991A9100B7E7F1 /* ButtonPuzzleViewController.swift in Sources */,
@@ -281,6 +288,7 @@
 				841743E12AA8F1BE002D4731 /* Puzzles.swift in Sources */,
 				843DA3E52A991F29002A0CD0 /* Direction.swift in Sources */,
 				84C01A212A97E8C60070D2E5 /* AppDelegate.swift in Sources */,
+				B3843DEF2AB2404B00521331 /* StartView.swift in Sources */,
 				843DAA4F2A9D2953002A0CD0 /* RoomViewController.swift in Sources */,
 				843DA3D92A97EE5E002A0CD0 /* Map.swift in Sources */,
 				84C01A232A97E8C60070D2E5 /* SceneDelegate.swift in Sources */,

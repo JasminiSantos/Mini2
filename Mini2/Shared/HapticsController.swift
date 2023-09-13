@@ -26,53 +26,6 @@ class HapticsController {
         return CHHapticEngine.capabilitiesForHardware().supportsHaptics
     }
     
-    func playHaptics(for contaminationLevel: Int) {
-        guard supportsHaptics else { return }
-        
-        let hapticIntensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(contaminationLevel) / 100.0)
-        
-        let hapticEvent = CHHapticEvent(eventType: .hapticTransient, parameters: [hapticIntensity], relativeTime: 0)
-        
-        do {
-            let pattern = try CHHapticPattern(events: [hapticEvent], parameters: [])
-            
-            let player = try hapticEngine?.makePlayer(with: pattern)
-            
-            try hapticEngine?.start()
-            
-            try player?.start(atTime: 0)
-        } catch let error {
-            print("Haptic playback error: \(error)")
-        }
-    }
-    
-    func startContinuousHaptics(for contaminationLevel: Int) {
-        guard supportsHaptics else { return }
-        
-        // Intensidade e frequência do haptic baseado no nível de contaminação
-        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(contaminationLevel) / 3.0)
-        
-        let hapticEvent = CHHapticEvent(eventType: .hapticContinuous, parameters: [intensity], relativeTime: 0, duration: 0.05)
-        
-        do {
-            let pattern = try CHHapticPattern(events: [hapticEvent], parameters: [])
-            continuousPlayer = try hapticEngine?.makeAdvancedPlayer(with: pattern)
-            
-            try hapticEngine?.start()
-            
-            continuousPlayer?.loopEnabled = true
-            continuousPlayer?.loopEnd = 1
-            
-            try continuousPlayer?.start(atTime: 0)
-        } catch let error {
-            print("Haptic playback error: \(error)")
-        }
-    }
-    
-    func stopContinuousHaptics() {
-        hapticEngine?.stop()
-    }
-    
     func playPulse() {
         do {
             // Certifique-se de que o motor está iniciado
@@ -100,6 +53,46 @@ class HapticsController {
         } catch let error {
             print("Erro ao tocar o padrão háptico: \(error)")
         }
+    }
+    
+    func startBreathingHaptic() {
+        do {
+            // Iniciar o mecanismo háptico, se necessário
+            try hapticEngine?.start()
+            
+            // Criar o padrão háptico
+            var events = [CHHapticEvent]()
+            
+            // Primeiros 1.5 segundos: diminuir a intensidade
+            for i in stride(from: 0, through: 1.5, by: 0.05) {
+                let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(1 - i / 1.5))
+                let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity], relativeTime: i)
+                events.append(event)
+            }
+            
+            // Seguintes 1.5 segundos: aumentar a intensidade
+            for i in stride(from: 1.5, through: 3.0, by: 0.05) {
+                let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float((i - 1.5) / 1.5))
+                let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity], relativeTime: i)
+                events.append(event)
+            }
+            
+            let pauseTime = 0.5
+            let pauseEvent = CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 1.5 + pauseTime)
+            events.append(pauseEvent)
+            
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try hapticEngine?.makePlayer(with: pattern)
+            
+            // Começar a tocar o padrão háptico
+            try player?.start(atTime: CHHapticTimeImmediate)
+        } catch {
+            print("Falha ao criar feedback háptico: \(error)")
+        }
+    }
+    
+    func stopBreathingHaptic() {
+        hapticEngine?.stop()
     }
 }
 

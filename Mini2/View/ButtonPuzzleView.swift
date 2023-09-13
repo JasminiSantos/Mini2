@@ -188,13 +188,10 @@ class ButtonPuzzleView: UIView {
         return view
     }()
     
-    lazy var successImage: UIImageView = {
-        let view = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.frame.size = CGSize(width: 200, height: 200)
-        return view
-    }()
+    func updateConsoleImage() {
+        consoleImage.image = UIImage(named: "Asset_resolvido_PzlBotoes")
+        consoleMatrix.greenBall.isHidden = true
+    }
     
     func setComplete() {
         isComplete?.value = true
@@ -204,7 +201,6 @@ class ButtonPuzzleView: UIView {
     private func addSubviews() {
         addSubview(backgroundImage)
         addSubview(buttonHStackView)
-//        addSubview(successImage)
         
         addSubview(exitButton)
         
@@ -250,11 +246,11 @@ class ButtonPuzzleView: UIView {
     
     private func updateButtonStates() {
         let buttonConditions = [
-            (!pressedButtons.contains(1) && !GameManager.shared.isPuzzleButtonsCompleted.value),
-            (!pressedButtons.contains(2) && !GameManager.shared.isPuzzleButtonsCompleted.value),
-            (!pressedButtons.contains(3) && !GameManager.shared.isPuzzleButtonsCompleted.value),
-            (!pressedButtons.contains(4) && !GameManager.shared.isPuzzleButtonsCompleted.value),
-            (!pressedButtons.contains(5) && !GameManager.shared.isPuzzleButtonsCompleted.value)
+            (!pressedButtons.contains(1) && GameManager.shared.hasAddedFlowerToComputer.value),
+            (!pressedButtons.contains(2) && GameManager.shared.hasAddedFlowerToComputer.value),
+            (!pressedButtons.contains(3) && GameManager.shared.hasAddedFlowerToComputer.value),
+            (!pressedButtons.contains(4) && GameManager.shared.hasAddedFlowerToComputer.value),
+            (!pressedButtons.contains(5) && GameManager.shared.hasAddedFlowerToComputer.value)
         ]
         
         let buttons = [firstButton, secondButton, thirdButton, fourthButton, fifthButton]
