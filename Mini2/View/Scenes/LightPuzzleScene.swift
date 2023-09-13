@@ -14,18 +14,21 @@ protocol SKMirrorDelegate: AnyObject {
 class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     let background = SKSpriteNode(imageNamed: "light-background")
     let backgroundFrame = SKSpriteNode(imageNamed: "light-frame")
+    let closedPanel = SKSpriteNode(imageNamed: "Asset_tampao_PzlLuzes")
+    
     var lightBeam:          SKLightBeam!
     var mirror:             SKMirror!
     var rotatingMirror:     SKMirror?
     var panGestureRecognizer: UIPanGestureRecognizer!
     
     private let softImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .soft)
-    private let heavyImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+    private let rigidImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
     
     var lastMirrorRotation: CGFloat?
     
     var completionPoint: CompletionPoint!
     var puzzleCompleted = false
+    var isPanelAdded = false
     
     var collisionFound = false
     
@@ -51,26 +54,78 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     }
     
     override func didMove(to view: SKView) {
-        physicsWorld.contactDelegate = self
-        physicsWorld.gravity = .zero
-        
-        softImpactFeedbackGenerator.prepare()
-        heavyImpactFeedbackGenerator.prepare()
-        
-        addBackground()
-        addLightBeam()
-        addMirror()
-        addCompletionPoint()
-        addPanRecognizer()
-        handleMirrorAndLightContact(mirror: mirror, lightBeam: lightBeam)
-        lights.append(lightBeam)
-        addBackgroundFrame()
+        if !GameManager.shared.isPuzzleLightCompleted.value {
+            
+            physicsWorld.contactDelegate = self
+            physicsWorld.gravity = .zero
+            
+            softImpactFeedbackGenerator.prepare()
+            rigidImpactFeedbackGenerator.prepare()
+            
+            addBackground()
+            addLightBeam()
+            addMirror()
+            addCompletionPoint()
+            addPanRecognizer()
+            handleMirrorAndLightContact(mirror: mirror, lightBeam: lightBeam)
+            lights.append(lightBeam)
+            addBackgroundFrame()
+        } else {
+            addPanel()
+            addBackgroundFrame()
+        }
     }
     
     func handleMirrorAndLightContact(mirror: SKMirror, lightBeam: SKLightBeam) {
         lightBeam.updateWithMirror(mirror: mirror)
     }
 
+    func addPanel() {
+        closedPanel.size = frame.size
+        closedPanel.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(closedPanel)
+    }
+    
+    func addPanelAnimated() {
+        if isPanelAdded {
+            return
+        }
+        
+        for light in lights {
+            light.zPosition = 10
+        }
+        
+        mirror.zPosition = 10
+        mirror2.zPosition = 10
+        mirror4.zPosition = 10
+        
+        let initialPosition = CGPoint(x: -closedPanel.size.width / 2, y: frame.midY)
+        let finalPosition = CGPoint(x: frame.midX, y: frame.midY)
+        
+        closedPanel.size = frame.size
+        closedPanel.position = initialPosition
+        closedPanel.zPosition = 25
+        
+        // Adicione o painel à cena
+        addChild(closedPanel)
+        
+        // Calcula o número total de 'passos' que o painel tomará para se mover até sua posição final.
+        let totalSteps = 50
+        let dx = (finalPosition.x - initialPosition.x) / CGFloat(totalSteps)
+        let dy = (finalPosition.y - initialPosition.y) / CGFloat(totalSteps)
+        
+        // Move o painel um pequeno incremento em cada iteração do loop
+        var actions: [SKAction] = []
+        for _ in 0..<totalSteps {
+            let moveAction = SKAction.moveBy(x: dx, y: dy, duration: 0.05)
+            actions.append(moveAction)
+        }
+        
+        let sequence = SKAction.sequence(actions)
+        
+        closedPanel.run(sequence)
+    }
+    
     func didGenerateNewLightBeam(_ lightBeam: SKLightBeam) {
         addChild(lightBeam)
         lights.append(lightBeam)
@@ -107,17 +162,12 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
         mirror2.zPosition = 64
         mirror2.delegate = self
         
-//        mirror3 = SKMirror(position: CGPoint(x: frame.midX - 150, y: frame.midY + 150), size: CGSize(width: 10, height: 100), rotation: .pi / 4)
-//        mirror3.zPosition = 64
-//        mirror3.delegate = self
-        
         mirror4 = SKMirror(position: CGPoint(x: frame.midX + 140, y: frame.midY + 110), size: CGSize(width: 10, height: 100), rotation: -.pi / 4)
         mirror4.zPosition = 64
         mirror4.delegate = self
         
         addChild(mirror)
         addChild(mirror2)
-//        addChild(mirror3)
         addChild(mirror4)
     }
     
@@ -132,101 +182,100 @@ class LightPuzzleScene: SKScene, SKPhysicsContactDelegate, SKMirrorDelegate {
     }
     
     @objc func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        let touchLocation = gestureRecognizer.location(in: self.view)
-        let touchPoint    = convertPoint(fromView: touchLocation)
-        let touchedNodes  = nodes(at: touchPoint)
-
-        for node in touchedNodes {
-            if let rotatingMirror = node as? SKMirror {
-                let dx = touchPoint.x - rotatingMirror.position.x
-                let dy = touchPoint.y - rotatingMirror.position.y
-
-                let angle = atan2(dy, dx)
-                rotatingMirror.zRotation = angle - .pi / 2
-                softImpactFeedbackGenerator.impactOccurred(intensity: 0.5)
+        if !GameManager.shared.isPuzzleLightCompleted.value {
+            let touchLocation = gestureRecognizer.location(in: self.view)
+            let touchPoint    = convertPoint(fromView: touchLocation)
+            let touchedNodes  = nodes(at: touchPoint)
+            
+            for node in touchedNodes {
+                if let rotatingMirror = node as? SKMirror {
+                    let dx = touchPoint.x - rotatingMirror.position.x
+                    let dy = touchPoint.y - rotatingMirror.position.y
+                    
+                    let angle = atan2(dy, dx)
+                    rotatingMirror.zRotation = angle - .pi / 2
+                    softImpactFeedbackGenerator.impactOccurred(intensity: 0.5)
+                }
             }
-        }
-        
-        lights.forEach { light in
-            if light != lightBeam {
-                light.removeFromParent()
+            
+            lights.forEach { light in
+                if light != lightBeam {
+                    light.removeFromParent()
+                }
             }
-        }
-        
-        lights.removeAll(where: {$0 != lightBeam})
-        
-        let mirrors: [SKMirror]  = [mirror, mirror2, mirror4]
-        mirror.id = "m1"
-        mirror2.id = "m2"
-//        mirror3.id = "m3"
-        mirror4.id = "m4"
-        
-        var checkedPairs = Array<String>()
-        var iterationCount = 0
-        let maxIterations = 10
-        
-        
-        repeat {
-            collisionFound = false
-            for mirror in mirrors {
-                var id = 1
-                for light in lights {
-                    let pairKey = "\(mirror.id) - \(id)"
-                    id += 1
-                    if !Set(checkedPairs).contains(pairKey) {
-                        handleMirrorAndLightContact(mirror: mirror, lightBeam: light)
-                        if collisionFound {
-                            checkedPairs.append(pairKey)
+            
+            lights.removeAll(where: {$0 != lightBeam})
+            
+            let mirrors: [SKMirror]  = [mirror, mirror2, mirror4]
+            mirror.id = "m1"
+            mirror2.id = "m2"
+            mirror4.id = "m4"
+            
+            var checkedPairs = Array<String>()
+            var iterationCount = 0
+            let maxIterations = 10
+            
+            
+            repeat {
+                collisionFound = false
+                for mirror in mirrors {
+                    var id = 1
+                    for light in lights {
+                        let pairKey = "\(mirror.id) - \(id)"
+                        id += 1
+                        if !Set(checkedPairs).contains(pairKey) {
+                            handleMirrorAndLightContact(mirror: mirror, lightBeam: light)
+                            if collisionFound {
+                                checkedPairs.append(pairKey)
+                            }
                         }
                     }
                 }
+                iterationCount += 1
+            } while collisionFound && iterationCount < maxIterations
+            
+            if lights.count == 1 {
+                resetPath(lightBeam: lightBeam)
             }
-            iterationCount += 1
-        } while collisionFound && iterationCount < maxIterations
-        
-        if lights.count == 1 {
-            resetPath(lightBeam: lightBeam)
-        }
-        
-        for light in lights {
-            let cp = handleCompletionPointAndLightContact(completionPoint: completionPoint, lightBeam: light)
-            if cp != nil {
-                self.view?.removeGestureRecognizer(panGestureRecognizer)
-                lights.last!.endPoint = cp!
-                lights.last!.updatePath()
-                puzzleCompleted = true
-                GameManager.shared.markPuzzleLightAsCompleted()
-                
-                performCompletionHaptics()
-                
-                break
-            }
-        }
-        
-        if puzzleCompleted {
+            
             for light in lights {
-                light.strokeColor = .green
+                let cp = handleCompletionPointAndLightContact(completionPoint: completionPoint, lightBeam: light)
+                if cp != nil {
+                    self.view?.removeGestureRecognizer(panGestureRecognizer)
+                    lights.last!.endPoint = cp!
+                    lights.last!.updatePath()
+                    puzzleCompleted = true
+                    GameManager.shared.markPuzzleLightAsCompleted()
+                    break
+                }
+            }
+            
+            if puzzleCompleted {
+                for light in lights {
+                    light.strokeColor = .green
+                }
+                addPanelAnimated()
+                performCompletionHaptics()
+                isPanelAdded = true
             }
         }
     }
     
     func performCompletionHaptics() {
-        // Primeiro impacto
-        heavyImpactFeedbackGenerator.impactOccurred()
+        let steps = 51
+        let timeIntervalBetweenSteps = 0.05
         
-        // Pausa curta e segundo impacto
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.heavyImpactFeedbackGenerator.impactOccurred()
-        }
-        
-        // Pausa curta e segundo impacto
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.heavyImpactFeedbackGenerator.impactOccurred()
-        }
-        
-        // Pausa longa e terceiro impacto
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.heavyImpactFeedbackGenerator.impactOccurred()
+        for step in 1...steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(step) * timeIntervalBetweenSteps) {
+                
+                let intensity = Double(step) / Double(steps)
+                
+                self.rigidImpactFeedbackGenerator.impactOccurred(intensity: CGFloat(intensity))
+                
+                if step == steps {
+                    self.rigidImpactFeedbackGenerator.impactOccurred(intensity: 1.0)
+                }
+            }
         }
     }
     
