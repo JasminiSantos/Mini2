@@ -13,7 +13,8 @@ public class GameManager {
     
     var isRadarEquipped = false
     var hasGameStarted = false
-    
+    var isSwitchOn = false
+
     private(set) var isPuzzleLightCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzlePipesCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzleButtonsCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
