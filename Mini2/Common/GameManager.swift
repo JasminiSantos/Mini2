@@ -13,6 +13,7 @@ public class GameManager {
     var isPuzzleLightCompleted: Bool = false
     var isPuzzlePipesCompleted: Bool = false
     var isPuzzleButtonsCompleted: Bool = false
+    var isRadarEquipped: Bool = false
     
     func areAllPuzzlesCompleted() -> Bool {
         return isPuzzleLightCompleted && isPuzzlePipesCompleted && isPuzzleButtonsCompleted
@@ -28,5 +29,8 @@ public class GameManager {
     
     func markPuzzleButtonsAsCompleted() {
         isPuzzleButtonsCompleted = true
+    }
+    func markRadarCompleted() {
+        isRadarEquipped = true
     }
 }
