@@ -120,6 +120,7 @@ class Map {
         
         if !(currentRoom?.hasMonstro() ?? false) && Double.random(in: 0...1) < probability {
             currentRoom?.setMonstro()
+            GameManager.shared.markGameAsFinished()
             print("There is a monster here!")
         }
     }
@@ -151,5 +152,4 @@ class Map {
                 return currentY < columns - 1
         }
     }
-
 }

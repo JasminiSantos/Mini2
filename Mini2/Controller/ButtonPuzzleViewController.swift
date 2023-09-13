@@ -15,6 +15,8 @@ protocol PuzzleViewControllerDelegate: AnyObject {
 class ButtonPuzzleViewController: UIViewController {
     var isAvailable: Bool
     private var buttonPuzzleView: ButtonPuzzleView?
+    private let lightImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+    private let heavyImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
     
     weak var delegate: PuzzleViewControllerDelegate?
     
@@ -23,9 +25,13 @@ class ButtonPuzzleViewController: UIViewController {
     let correctSequence = [3, 1, 5, 4, 2]
     var currentSequence: [Int] = []
     
+    let correctPosition = (0, 2)
+    
     init(isAvailable: Bool, buttonPuzzleView: ButtonPuzzleView? = nil) {
         self.isAvailable = isAvailable
         super.init(nibName: nil, bundle: nil)
+        lightImpactFeedbackGenerator.prepare()
+        heavyImpactFeedbackGenerator.prepare()
     }
     
     required init?(coder: NSCoder) {
@@ -50,7 +56,6 @@ class ButtonPuzzleViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupSubscriptions()
     }
     
@@ -59,51 +64,99 @@ class ButtonPuzzleViewController: UIViewController {
         delegate?.puzzleViewControllerDidRequestExit(self)
     }
     
+    // MARK: Main puzzle logic
+    
+    func checkPosition() {
+        let currentPos = buttonPuzzleView!.consoleMatrix.getCurrentPosition()
+        
+        if correctPosition == currentPos {
+            GameManager.shared.markPuzzleButtonsAsCompleted()
+            performCompletionHaptics()
+            
+        } else {
+            if currentSequence.count == 5 {
+                self.currentSequence.removeAll()
+                
+                startPixelatedShake()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.buttonPuzzleView!.resetPuzzle()
+                }
+                
+                for i in 0..<4 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i) * 0.1)) {
+                        self.heavyImpactFeedbackGenerator.impactOccurred()
+                    }
+                }
+            }
+        }
+    }
+    
     func addToCurrentSequence(_ value: Int) {
         if !currentSequence.contains(value) {
             currentSequence.append(value)
-            
-            if currentSequence.count == correctSequence.count {
-                checkSequence()
-            }
         }
     }
 
-    func checkSequence() {
-        if currentSequence == correctSequence {
-            GameManager.shared.markPuzzleButtonsAsCompleted()
-//            buttonPuzzleView!.successImage.tintColor = .green
-        } else {
-//            buttonPuzzleView!.successImage.tintColor = .red
-            DispatchQueue.main.async {
-                self.buttonPuzzleView!.resetPuzzle()
-            }
-        }
-        currentSequence.removeAll()
-    }
+    // MARK: setting up Combine
     
-    func blinkAnimation(count: Int, button: UIView, color: UIColor) {
-        if count <= 0 {
-            return
-        }
-        
-        UIView.animate(withDuration: 0.1, animations: {
-            button.tintColor = color
-        }, completion: { _ in
-            UIView.animate(withDuration: 0.1, animations: {
-                button.tintColor = .blue
-            }, completion: { _ in
-                self.blinkAnimation(count: count - 1, button: button, color: color)
-            })
-        })
-    }
-
     private func setupSubscriptions() {
         buttonPuzzleView!.sequencePublisher
             .sink { [weak self] value in
                 self?.addToCurrentSequence(value)
-                
+                self?.checkPosition()
             }
             .store(in: &cancellables)
+    }
+    
+    // MARK: Completion impact
+    func performCompletionHaptics() {
+        // Primeiro impacto
+        heavyImpactFeedbackGenerator.impactOccurred()
+        
+        // Pausa curta e segundo impacto
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.heavyImpactFeedbackGenerator.impactOccurred()
+        }
+        
+        // Pausa longa e terceiro impacto
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.heavyImpactFeedbackGenerator.impactOccurred()
+        }
+    }
+    
+    // MARK: Shake animation
+    
+    var timer: Timer?
+    var shakeCount = 0
+    let maxShakes = 8  // Número de "vibrações"
+    let shakeDistance: CGFloat = 5.0  // Distância de cada "vibração"
+    
+    func startPixelatedShake() {
+        shakeCount = 0
+        timer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(performPixelatedShake), userInfo: nil, repeats: true)
+    }
+    
+    @objc func performPixelatedShake() {
+        if shakeCount >= maxShakes {
+            timer?.invalidate()
+            timer = nil
+            return
+        }
+        
+        // Calcula a nova posição
+        var xOffset: CGFloat = 0
+        if shakeCount % 2 == 0 {
+            xOffset = shakeDistance
+        } else {
+            xOffset = -shakeDistance
+        }
+        
+        // Move a greenBall
+        let originalCenter = buttonPuzzleView?.consoleMatrix.greenBall.center ?? CGPoint.zero
+        buttonPuzzleView?.consoleMatrix.greenBall.center = CGPoint(x: originalCenter.x + xOffset, y: originalCenter.y)
+        
+        // Incrementa o contador
+        shakeCount += 1
     }
 }

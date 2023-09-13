@@ -73,33 +73,33 @@ class HapticsController {
         hapticEngine?.stop()
     }
     
-    func startRadarPulse(for contaminationLevel: Int) {
-        stopRadarPulse()  // Parar o timer atual, se houver
+    func playPulse() {
+        do {
+            // Certifique-se de que o motor está iniciado
+            try hapticEngine?.start()
 
-        // Frequência do pulso baseada no nível de contaminação.
-        var interval: Double
-        if contaminationLevel == 5 {
-            interval = 0.25
-        }
-        else if contaminationLevel == 4 || contaminationLevel == 3 {
-            interval = 0.8
-        } else {
-            interval = 2
-        }
+            // Criar um evento háptico intenso e curto
+            let intenseSharpEvent = CHHapticEvent(
+                eventType: .hapticContinuous,
+                parameters: [
+                    CHHapticEventParameter(parameterID: .hapticIntensity, value: 1.0),
+                    CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.5)
+                ],
+                relativeTime: 0,
+                duration: 0.05
+            )
 
-        radarTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.startContinuousHaptics(for: contaminationLevel)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + interval / 4) {
-                self?.stopContinuousHaptics()
-            }
-        }
-    }
+            // Criar um padrão com esse único evento
+            let pattern = try CHHapticPattern(events: [intenseSharpEvent], parameters: [])
 
-    func stopRadarPulse() {
-        stopContinuousHaptics()
-        radarTimer?.invalidate()
-        radarTimer = nil
+            // Criar um jogador com o padrão
+            let player = try hapticEngine?.makePlayer(with: pattern)
+
+            // Tocar o padrão
+            try player?.start(atTime: CHHapticTimeImmediate)
+        } catch let error {
+            print("Erro ao tocar o padrão háptico: \(error)")
+        }
     }
 }
 

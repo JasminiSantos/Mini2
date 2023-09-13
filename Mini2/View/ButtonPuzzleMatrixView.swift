@@ -126,4 +126,8 @@ class ButtonPuzzleMatrixView: UIView {
     func updateBall() {
         greenBall.alpha = isAvailable ? 1 : 0
     }
+    
+    func getCurrentPosition() -> (Int, Int) {
+        return (currentRow, currentCol)
+    }
 }
