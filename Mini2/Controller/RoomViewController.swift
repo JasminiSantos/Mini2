@@ -33,7 +33,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     var frameButton: 	    UIButton!
     var endButton: 		    UIButton!
     
-    var isInspecting = false
     var inspectionImageView: UIImageView?
     var currentPage = 0
     var itemImages: [UIImage] = []
@@ -145,7 +144,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         frameButton.isHidden = !(map.currentX == 2 && map.currentY == 1)
         endButton.isHidden = !(GameManager.shared.didTurnSwitchOn.value && map.currentX == 2 && map.currentY == 1)
         
-        
         updateBackgroundBasedOnVisibleButtons()
     }
     
@@ -192,6 +190,13 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             
         } else {
             self.setBackgroundImage(named: "fundo_nada")
+        }
+        
+        if let room = map.currentRoom, room.x == 2 && room.y == 1 && !GameManager.shared.areAllPuzzlesCompleted() {
+            self.backgroundImageView.addSubview(addBackgroundImage(named: "Asset_SalaFinalEscura"))
+        }
+        else if let room = map.currentRoom, room.x == 2 && room.y == 1 && GameManager.shared.isSwitchOn {
+            backgroundImageView.addSubview(addBackgroundImage(named: "Asset_PainelOculto_Ligado"))
         }
     }
     
@@ -245,10 +250,10 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         } else {
             inspectionImageView?.image = itemImages[currentPage]
         }
+        
     }
     
     func endInspection() {
-        isInspecting = false
         currentPage = 0
         inspectionImageView?.removeFromSuperview()
         inspectionImageView = nil

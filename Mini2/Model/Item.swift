@@ -7,8 +7,8 @@
 
 import UIKit
 
-enum Item {
-    case bluePrint
+enum Item: Int {
+    case bluePrint = 0
     case document
     case radar
     case frame
@@ -74,36 +74,6 @@ enum Item {
     }
     var itemUIImage: UIImage? {
         return UIImage(named: itemImageName)
-    }
-}
-
-class ItemInspector {
-    private(set) var item: Item
-    private var currentInspectIndex: Int = 0
-    
-    init(item: Item) {
-        self.item = item
-    }
-    
-    func nextInspectImage() -> UIImage? {
-        if currentInspectIndex < item.itemInspectImageName.count - 1 {
-            currentInspectIndex += 1
-        }
-        return currentInspectUIImage
-    }
-
-    func previousInspectImage() -> UIImage? {
-        if currentInspectIndex > 0 {
-            currentInspectIndex -= 1
-        }
-        return currentInspectUIImage
-    }
-
-    var currentInspectUIImage: UIImage? {
-        guard item.itemInspectImageName.indices.contains(currentInspectIndex) else {
-            return nil
-        }
-        return UIImage(named: item.itemInspectImageName[currentInspectIndex])
     }
 }
 
