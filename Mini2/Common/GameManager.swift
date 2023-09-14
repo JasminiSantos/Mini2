@@ -11,17 +11,18 @@ import Combine
 public class GameManager {
     static let shared = GameManager()
     
-    var isRadarEquipped = false
     var hasGameStarted = false
-    var isSwitchOn = false
 
+    private(set) var isRadarEquipped: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzleLightCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzlePipesCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var isPuzzleButtonsCompleted: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var hasPickedFlower: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
-    
     private(set) var shouldAddFlowerToComputer: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     private(set) var hasAddedFlowerToComputer: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    
+    private(set) var didDropBoatFrame: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var didTurnSwitchOn: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     
     private(set) var isGameOver: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     
@@ -30,10 +31,9 @@ public class GameManager {
     }
     
     func resetGame() {
-        isRadarEquipped = false
         hasGameStarted = false
-        isSwitchOn = false
         
+        isRadarEquipped.value = false
         isPuzzleLightCompleted.value = false
         isPuzzlePipesCompleted.value = false
         isPuzzleButtonsCompleted.value = false
@@ -41,6 +41,12 @@ public class GameManager {
         shouldAddFlowerToComputer.value = false
         hasAddedFlowerToComputer.value = false
         isGameOver.value = false
+        didDropBoatFrame.value = false
+        didTurnSwitchOn.value = false
+    }
+    
+    func markRadarAsPicked() {
+        isRadarEquipped.value = true
     }
     
     func markPuzzleLightAsCompleted() {
@@ -68,10 +74,15 @@ public class GameManager {
         hasAddedFlowerToComputer.value = true
     }
     
+    func markBoatFrameAsDropped() {
+        didDropBoatFrame.value = true
+    }
+    
+    func markSwitchAsOn() {
+        didTurnSwitchOn.value = true
+    }
+    
     func markGameAsFinished() {
         isGameOver.value = true
-    }
-    func markRadarCompleted() {
-        isRadarEquipped = true
     }
 }

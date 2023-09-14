@@ -91,6 +91,30 @@ class HapticsController {
         }
     }
     
+    func playDeathHaptic() {
+        do {
+            try hapticEngine?.start()
+            
+            // Criar o padrão háptico
+            var events = [CHHapticEvent]()
+            
+            // Vibração de 5 segundos diminuindo a intensidade
+            for i in stride(from: 0.0, through: 5.0, by: 0.1) {
+                let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float((5.0 - i / 2) / 5.0))
+                let event = CHHapticEvent(eventType: .hapticContinuous, parameters: [intensity], relativeTime: i, duration: 0.1)
+                events.append(event)
+            }
+            
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try hapticEngine?.makePlayer(with: pattern)
+            
+            // Começar a tocar o padrão háptico
+            try player?.start(atTime: CHHapticTimeImmediate)
+        } catch let error {
+            print("Falha ao criar feedback háptico: \(error)")
+        }
+    }
+    
     func stopBreathingHaptic() {
         hapticEngine?.stop()
     }

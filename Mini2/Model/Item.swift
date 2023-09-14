@@ -26,8 +26,17 @@ enum Item: Int {
             case .radar:
                 return "Asset_radarNoChao"
             case .frame:
+                if GameManager.shared.isPuzzleLightCompleted.value {
+                    if GameManager.shared.didDropBoatFrame.value {
+                        if GameManager.shared.didTurnSwitchOn.value {
+                            return "Asset_PainelOculto_Ligado"
+                        }
+                        return "Asset_PainelOculto_Desligado"
+                    }
+                }
                 return "Asset_quadroNoLugar"
             case .specialDoor:
+                
                 return "Asset_portaFinal"
             case .plant:
                 return "Asset_plantinhaNaMesa"
