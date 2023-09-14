@@ -29,7 +29,7 @@ class PipePuzzleView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        backgroundColor = .black
         addSubviews()
         setupConstraints()
     }

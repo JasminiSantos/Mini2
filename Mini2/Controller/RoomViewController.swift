@@ -191,13 +191,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         } else {
             self.setBackgroundImage(named: "fundo_nada")
         }
-        
-        if let room = map.currentRoom, room.x == 2 && room.y == 1 && !GameManager.shared.areAllPuzzlesCompleted() {
-            self.backgroundImageView.addSubview(addBackgroundImage(named: "Asset_SalaFinalEscura"))
-        }
-        else if let room = map.currentRoom, room.x == 2 && room.y == 1 && GameManager.shared.isSwitchOn {
-            backgroundImageView.addSubview(addBackgroundImage(named: "Asset_PainelOculto_Ligado"))
-        }
     }
     
     @objc func upButtonTapped() {
@@ -221,7 +214,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
 
     @objc func inspectItem() {
-        isInspecting = true
         GameManager.shared.markRadarAsPicked()
         
         itemImages = map.currentRoom?.items.first?.itemInspectImageName.compactMap {

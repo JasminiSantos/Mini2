@@ -27,9 +27,9 @@ class LightPuzzleView: UIView {
         return view
     }()
     
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .black
         addSubviews()
         setupConstraints()
     }
