@@ -24,7 +24,7 @@ enum Item {
             case .document:
                 return "Asset_DocumentoNoChao"
             case .radar:
-                return "Asset_radarNoChão"
+                return "Asset_radarNoChao"
             case .frame:
                 return "Asset_quadroNoLugar"
             case .specialDoor:
@@ -45,7 +45,7 @@ enum Item {
             case .document:
                 items = ["Asset_Doc1_Aberto", "Asset_Doc2_Aberto"]
             case .radar:
-                items = ["Asset_radarNoChão"]
+                items = ["Asset_radarNoChao"]
             case .frame:
                 items = ["Asset_quadroNoLugar", "Asset_PainelOculto_Desligado", "Asset_PainelOculto_Ligado"]
             case .specialDoor:

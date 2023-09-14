@@ -135,15 +135,19 @@ class Map {
     func monsterProbability(for contaminationLevel: Int) -> Double {
         switch contaminationLevel {
             case 1:
-                return 0.0
+            return 0.0
+            
             case 2:
-                return 0.01
+            return 0.05
+            
             case 3:
-                return 0.05
+            return 0.1
+            
             case 4:
-                return 0.15
+            return 0.4
+            
             default:
-                return 0.0
+            return 0.0
         }
     }
 

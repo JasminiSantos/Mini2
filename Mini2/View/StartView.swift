@@ -23,7 +23,7 @@ class StartView: UIView {
     }
     
     private lazy var background: UIImageView = {
-        let view = UIImageView(image: UIImage(named: "Asset_TelaInício"))
+        let view = UIImageView(image: UIImage(named: "Asset_TelaInicio"))
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view

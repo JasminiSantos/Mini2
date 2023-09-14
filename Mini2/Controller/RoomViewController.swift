@@ -216,8 +216,8 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         if let currentRoom = map.currentRoom,
            currentRoom.x == 0 && currentRoom.y == 0,
            currentRoom.items.contains(where: { $0 == .frame }) {
-            GameManager.shared.isSwitchOn = true
-            updateRadarButtons()
+                GameManager.shared.isSwitchOn = true
+                updateRadarButtons()
         }
     }
     
@@ -263,19 +263,22 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
                     self.setMonsterScene()
                 }
                 else {
+                    self.updateButtonVisibility()
                     self.view.alpha = 1
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.updateButtonVisibility()
-            if GameManager.shared.isRadarEquipped {
-                self.updateRadarButtons()
+        if !GameManager.shared.isGameOver.value {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if GameManager.shared.isRadarEquipped {
+                    self.updateRadarButtons()
+                }
             }
         }
     }
     
     func setMonsterScene() {
+        GameManager.shared.markGameAsFinished()
         backgroundImageView.subviews.forEach({ $0.removeFromSuperview() })
         removeBackground()
         
@@ -283,15 +286,20 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             self.view.alpha = 1
         }) { _ in
             self.setBackgroundImage(named: "Asset_teladoPlantalhao")
-            if GameManager.shared.isRadarEquipped {
-                self.updateRadarButtons()
-            }
-            UIView.animate(withDuration: 5) {
+            UIView.animate(withDuration: 5, animations: {
                 self.view.alpha = 0
+            }) { _ in
+                self.restart()
             }
         }
     }
-
+    
+    func restart() {
+        GameManager.shared.resetGame()
+        if let nc = self.navigationController as? FadeNavigationController {
+            nc.popToRootViewController(animated: true)
+        }
+    }
     
     func goToPuzzle() {
         var nextViewController: UIViewController
@@ -475,15 +483,12 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         GameManager.shared.isPuzzlePipesCompleted.sink { completed in
             if completed {
                 self.map.currentRoom?.puzzleImageName = "asset_puzzletubos_aberto"
-                if GameManager.shared.isRadarEquipped {
-                    self.updateRadarButtons()
-                }
             }
         }.store(in: &cancellables)
         
         GameManager.shared.isGameOver.sink { completed in
             if completed {
-                
+                self.pulseTimer?.invalidate()
             }
         }.store(in: &cancellables)
         
@@ -510,9 +515,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         
         GameManager.shared.isPuzzleLightCompleted.sink { completed in
             if completed {
-                if GameManager.shared.isRadarEquipped {
-                    self.updateRadarButtons()
-                }
+                
             }
         }.store(in: &cancellables)
     }

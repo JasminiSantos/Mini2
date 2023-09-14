@@ -29,6 +29,20 @@ public class GameManager {
         return isPuzzleLightCompleted.value && isPuzzlePipesCompleted.value && isPuzzleButtonsCompleted.value
     }
     
+    func resetGame() {
+        isRadarEquipped = false
+        hasGameStarted = false
+        isSwitchOn = false
+        
+        isPuzzleLightCompleted.value = false
+        isPuzzlePipesCompleted.value = false
+        isPuzzleButtonsCompleted.value = false
+        hasPickedFlower.value = false
+        shouldAddFlowerToComputer.value = false
+        hasAddedFlowerToComputer.value = false
+        isGameOver.value = false
+    }
+    
     func markPuzzleLightAsCompleted() {
         isPuzzleLightCompleted.value = true
     }
