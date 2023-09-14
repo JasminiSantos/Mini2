@@ -20,6 +20,10 @@ class StartViewController: UIViewController {
         super.viewDidLoad()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        do { startView.removeCutscene() }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         playHaptics()
     }
@@ -38,8 +42,20 @@ class StartViewController: UIViewController {
     func startGame() {
         HapticsController.shared.stopBreathingHaptic()
         timer?.invalidate()
-        if let navController = self.navigationController as? FadeNavigationController {
-            navController.pushViewController(RoomViewController(), animated: true)
+        
+        UIView.animate(withDuration: 1, animations: {
+            self.view.alpha = 0
+        }) { _ in
+            self.view.alpha = 1
+            self.startView.addCutscene()
+            UIView.animate(withDuration: 5, animations: {
+                HapticsController.shared.playDeathHaptic()
+                self.view.alpha = 0
+            }) { _ in
+                if let navController = self.navigationController as? FadeNavigationController {
+                    navController.pushViewController(RoomViewController(), animated: true)
+                }
+            }
         }
     }
 }

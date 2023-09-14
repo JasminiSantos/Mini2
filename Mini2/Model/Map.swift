@@ -102,6 +102,18 @@ class Map {
         return rooms
     }
 
+    func updateFinalRoom() -> Room {
+        let room = rooms[2][1]
+        
+        room.items = []
+        room.setItem(.frame)
+        room.setItem(.specialDoor)
+        room.setItem(.plant)
+        room.setItem(.chair)
+        
+        return room
+    }
+    
     func move(direction: Direction) {
         switch direction {
             case .up:

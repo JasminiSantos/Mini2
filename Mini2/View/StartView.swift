@@ -39,12 +39,19 @@ class StartView: UIView {
         return view
     }()
     
+    private lazy var cutsceneBackground: UIImageView = {
+        let view = UIImageView(image: UIImage(named: "Asset_CutsceneInicial"))
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
     @objc
     func didPressStartButton() {
         handleStartButtonTap()
     }
     
-    private func setupAnimation() {
+    func setupAnimation() {
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = 1
         animation.toValue = 0.4
@@ -57,6 +64,19 @@ class StartView: UIView {
     private func addSubviews() {
         addSubview(background)
         addSubview(startButton)
+    }
+    
+    func addCutscene() {
+        addSubview(cutsceneBackground)
+        
+        cutsceneBackground.leadingAnchor.constraint(equalTo: leadingAnchor).setActive()
+        cutsceneBackground.trailingAnchor.constraint(equalTo: trailingAnchor).setActive()
+        cutsceneBackground.topAnchor.constraint(equalTo: topAnchor).setActive()
+        cutsceneBackground.bottomAnchor.constraint(equalTo: bottomAnchor).setActive()
+    }
+    
+    func removeCutscene() {
+        cutsceneBackground.removeFromSuperview()
     }
     
     private func setupConstraints() {
