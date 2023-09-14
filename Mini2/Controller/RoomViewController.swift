@@ -34,7 +34,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     var itemButton: UIButton!
     var frameButton: UIButton!
     
-    var isInspecting = false
     var inspectionImageView: UIImageView?
     var currentPage = 0
     var itemImages: [UIImage] = []
@@ -105,7 +104,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         puzzleButton.isHidden = map.currentRoom?.puzzle == Puzzles.none || map.currentRoom == nil
         pickFlowerButton.isHidden = !GameManager.shared.isPuzzlePipesCompleted.value || GameManager.shared.hasPickedFlower.value
         itemButton.isHidden = map.currentRoom?.items.count == 0
-//        frameButton.isHidden = !(map.currentRoom?.x == 2 && map.currentRoom?.x == 1)
+        frameButton.isHidden = !(map.currentRoom?.x == 2 && map.currentRoom?.y == 1) || !GameManager.shared.areAllPuzzlesCompleted()
         
         updateBackgroundBasedOnVisibleButtons()
     }
@@ -153,6 +152,13 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         } else {
             self.setBackgroundImage(named: "fundo_nada")
         }
+        
+        if let room = map.currentRoom, room.x == 2 && room.y == 1 && !GameManager.shared.areAllPuzzlesCompleted() {
+            self.backgroundImageView.addSubview(addBackgroundImage(named: "Asset_SalaFinalEscura"))
+        }
+        else if let room = map.currentRoom, room.x == 2 && room.y == 1 && GameManager.shared.isSwitchOn {
+            backgroundImageView.addSubview(addBackgroundImage(named: "Asset_PainelOculto_Ligado"))
+        }
     }
     
     @objc func upButtonTapped() {
@@ -176,8 +182,6 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
     }
 
     @objc func inspectItem() {
-        isInspecting = true
-        
         itemImages = map.currentRoom?.items.first?.itemInspectImageName.compactMap {
             UIImage(named: $0)
         } ?? []
@@ -199,10 +203,10 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
         } else {
             inspectionImageView?.image = itemImages[currentPage]
         }
+        
     }
     
     func endInspection() {
-        isInspecting = false
         currentPage = 0
         inspectionImageView?.removeFromSuperview()
         inspectionImageView = nil
@@ -211,13 +215,21 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
            currentRoom.x == 0 && currentRoom.y == 0,
            currentRoom.items.contains(where: { $0 == .radar }) {
             GameManager.shared.isRadarEquipped = true
+            if let foundImageView = backgroundImageView.viewWithTag(2) as? UIImageView {
+                foundImageView.removeFromSuperview()
+                currentRoom.items.removeAll(where: { $0 == .radar })
+            }
             updateRadarButtons()
         }
         if let currentRoom = map.currentRoom,
-           currentRoom.x == 0 && currentRoom.y == 0,
-           currentRoom.items.contains(where: { $0 == .frame }) {
+           currentRoom.items.contains(where: { $0 == .frame }){
                 GameManager.shared.isSwitchOn = true
-                updateRadarButtons()
+                if let foundImageView = backgroundImageView.viewWithTag(4) as? UIImageView {
+                    foundImageView.removeFromSuperview()
+                    currentRoom.items.removeAll(where: { $0 == .frame })
+                    backgroundImageView.addSubview(addBackgroundImage(named: "Asset_PainelOculto_Ligado"))
+                }
+                frameButton.removeFromSuperview()
         }
     }
     
@@ -231,7 +243,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             
             if let items = map.currentRoom?.items {
                 for item in items {
-                    backgroundImageView.addSubview(addBackgroundImage(named: item.itemImageName))
+                    var image = addBackgroundImage(named: item.itemImageName)
+                    image.tag = item.rawValue
+                    backgroundImageView.addSubview(image)
                 }
             }
 
@@ -286,6 +300,9 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             self.view.alpha = 1
         }) { _ in
             self.setBackgroundImage(named: "Asset_teladoPlantalhao")
+            if GameManager.shared.isRadarEquipped {
+                self.updateRadarButtons()
+            }
             UIView.animate(withDuration: 5, animations: {
                 self.view.alpha = 0
             }) { _ in
@@ -395,7 +412,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             GameManager.shared.isPuzzlePipesCompleted.sink { completed in
                 if completed {
                     if GameManager.shared.isRadarEquipped {
-                        self.radarImage.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_1"))
+                        self.backgroundImageView.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_1"))
                     }
                 }
             }.store(in: &cancellables)
@@ -403,7 +420,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             GameManager.shared.isPuzzleButtonsCompleted.sink { completed in
                 if completed {
                     if GameManager.shared.isRadarEquipped {
-                        self.radarImage.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_2"))
+                        self.backgroundImageView.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_2"))
                     }
                 }
             }.store(in: &cancellables)
@@ -411,7 +428,7 @@ class RoomViewController: UIViewController, PuzzleViewControllerDelegate {
             GameManager.shared.isPuzzleLightCompleted.sink { completed in
                 if completed {
                     if GameManager.shared.isRadarEquipped {
-                        self.radarImage.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_3"))
+                        self.backgroundImageView.addSubview(self.addBackgroundImage(named: "asset_interfaceSecundaria_preenchida_3"))
                     }
                 }
             }.store(in: &cancellables)
